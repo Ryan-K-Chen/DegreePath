@@ -23,8 +23,9 @@ def getSubjectHtml(index):
 
     ## Select the term
     ### MUST CHANGE TERM VALUE TO UPDATE FOR NEW SEMESTER ####
+    currentTerm = 'Fall 2020'
     term = Select(browser.find_element_by_name('cat_term_in'))
-    term.select_by_visible_text('Fall 2020')       ### change this for corresponding update
+    term.select_by_visible_text(currentTerm)       ### change this for corresponding update
     browser.find_element_by_xpath("//input[@type='submit']").click()
     
     ## Select the subject
@@ -33,22 +34,39 @@ def getSubjectHtml(index):
     browser.find_element_by_xpath("//input[@type='submit']").click()
     return browser.page_source
 
+def get_Subject_Course_URLs():
+    subject_html = getSubjectHtml(0)       # get subject at index 32 (Electrical Engineering)
+    soup = BeautifulSoup(subject_html, 'html.parser')
+
+    main_site = 'https://oscar.gatech.edu'  # declare the main url that will be added to hrefs
+    courses = []                            # initialize empty matrix
+    # create a matrix of all course urls in soup
+    for course in soup.find_all(class_='nttitle'):
+        url = course.find('a', href=True)
+        courses.append(main_site + url['href'])
+
+    return courses
+
 
 def getInfo(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')      #get the raw html from the link in text form
 
-    info = soup.find(class_='ddlabel').text     #get the "Detailed Class Information" from the page
+    info = soup.find(class_='nttitle').text     #get the "Detailed Class Information" from the page
 
-    """  create a matrix of format, [Course, CRN, Department, Number]  """
-    print(info)
-    infoList = info.split(' - ')
+
+    ######## make an edge case for classes not offered anymore ECE 2030 based on All Section for this COurse###
+
+    """  create a matrix of format, [Department, Course Number, Title]  """
+    # print(info)
+    tempMatrix = info.split(' - ')
     
-
-    tempStr = infoList[2]
-    infoList[2] = tempStr[:tempStr.find(' ')]
-    infoList[3] = tempStr[tempStr.find(' ')+1:len(tempStr)]
-    del infoList[4:]   
+    infoList = ['null', 'null', 'null']         # initialize matrix 
+    # reorganize string into desired matrix format
+    tempStr = tempMatrix[0] 
+    infoList[2] = tempMatrix[1]
+    infoList[0] = tempStr[:tempStr.find(' ')]
+    infoList[1] = tempStr[tempStr.find(' ')+1:len(tempStr)]  
     return infoList
 
 def getPrereqs(url):
@@ -56,9 +74,9 @@ def getPrereqs(url):
     soup = BeautifulSoup(response.text, 'html.parser')      #get the raw html from the url in text form
 
     #get the "Prerequisites" from the page
-    body = soup.find(class_='dddefault').text
+    body = soup.find(class_='ntdefault').text
 
-    ##########make edge case if there are no prereqs like CRN 80087#################################################
+    ########## make edge case if there are no prereqs like CRN 80087#################################################
     # try: 
     rawPrereqs = body.lower().rsplit('prerequisites:')[1]
     # except:
@@ -72,8 +90,8 @@ def getPrereqs(url):
     prereqList = rawPrereqs.split(' and ')
 
     ### print list of each prerequisite 
-    print(prereqList)
-    print('')
+    # print(prereqList)
+    # print('')
 
     ### separate each prerequisite into a list with the prereq options 
     for req in range(len(prereqList)):
@@ -98,17 +116,15 @@ def getPrereqs(url):
 # course1Prereqs = getPrereqs(url)
 # print(course1Prereqs)
 
-subject_html = getSubjectHtml(0)
-soup = BeautifulSoup(subject_html, 'html.parser')
+courseURLs = get_Subject_Course_URLs()
+
+chungusMatrix = []
+for url in range(len(courseURLs)):
+    tempMatrix = []     # initialize matrix somewhere else for better efficiency?
+    tempMatrix.append(getInfo(courseURLs[url]))
+    # tempMatrix.append(getPrereqs(courseURLs[url]))
+    chungusMatrix.append(tempMatrix)
+    print(chungusMatrix[url])
 
 
-main_site = 'https://oscar.gatech.edu'  # declare the main url that will be added to hrefs
-courses = []                            # initialize empty matrix
-# create a matrix of all course urls in soup
-for course in soup.find_all(class_='nttitle'):
-    url = course.find('a', href=True)
-    courses.append(main_site + url['href'])
-
-print('courses')
-print(courses)
-
+print(chungusMatrix[len(courseURLs)-1])     # prints the info of the last course in the subject
