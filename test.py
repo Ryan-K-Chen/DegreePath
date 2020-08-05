@@ -4,7 +4,7 @@ from csv import writer
 import re
 
 
-string = 'hello hi'
-twoindex = string.split(' ')
-twoindex[3] = '41231'
+mat = []
+mat.append(['hi'])
 
+print(mat)
