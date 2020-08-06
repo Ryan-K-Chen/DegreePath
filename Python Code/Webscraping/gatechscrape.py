@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from csv import writer
 import re
+import json
 
 from selenium import webdriver      #this version of chromedriver.exe supports Chrome v83
 from selenium.webdriver.common.keys import Keys
@@ -35,12 +36,13 @@ def getSubjectHtml(currentTerm, index, lower_limit, upper_limit):
 
 
 
-def get_subjectCourseMatrix():
+def build_SubjectCourseDict():
     subject_html = getSubjectHtml('Fall 2020', 32, 1999, 5000)       # get subject at this index (Electrical Engineering)
     soup = BeautifulSoup(subject_html, 'html.parser')
 
     main_site = 'https://oscar.gatech.edu'  # declare the main url that will be added to hrefs
-    courseMatrix = []                            # initialize empty matrix
+
+    course_dict = {}
     # create a matrix of all course urls in soup
     for course in soup.find_all(class_='nttitle'):
         url = main_site + course.find('a', href=True)['href']
@@ -51,11 +53,16 @@ def get_subjectCourseMatrix():
         #     continue
         infoMatrix = getInfo(soup)
         prereqFilteredMatrix = deleteSatisfiedPrereqs(getPrereqs(soup))
-        infoMatrix.append(prereqFilteredMatrix)
-        print(infoMatrix)
-        courseMatrix.append(infoMatrix)
 
-    return courseMatrix
+        course_key = infoMatrix[0]+infoMatrix[1]
+        course_dict[course_key] = {}
+        course_dict[course_key]['Department'] = infoMatrix[0]
+        course_dict[course_key]['Course Number'] = infoMatrix[1]
+        course_dict[course_key]['Course Title'] = infoMatrix[2]
+        course_dict[course_key]['Prerequisites'] = prereqFilteredMatrix
+        print(course_key)
+
+    return course_dict
 
 
 def getInfo(soup):
@@ -69,7 +76,7 @@ def getInfo(soup):
     tempMatrix = info.split(' - ')
 
     infoList = ['null', 'null', 'null']         # initialize matrix
-    # reorganize string into desired matrix format
+    # reorganize string into desired matrix format ['Department', 'Course Number', 'Course Title']
     tempStr = tempMatrix[0]
     infoList[2] = tempMatrix[1]
     infoList[0] = tempStr[:tempStr.find(' ')]
@@ -115,7 +122,12 @@ def deleteSatisfiedPrereqs(prereqList):
 
 
 
-courses = get_subjectCourseMatrix()
+courses = build_SubjectCourseDict()
+for key, value in courses.items():
+    print(key, ' : ', value)
+
+with open('courses.json', 'w') as json_file:
+    json.dump(courses, json_file)
 
 response = requests.get("https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_course_detail?cat_term_in=202008&subj_code_in=ECE&crse_numb_in=3084")
 soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
