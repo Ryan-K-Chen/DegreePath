@@ -1,34 +1,40 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import App from "./App.js"
-import Class from "./Class.js"
+import App from "./App"
+import { Class } from "./Class"
+import { Button } from "antd"
+import 'antd/dist/antd.css';
+import { DndProvider } from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
+import { Semester } from "./Semester"
 
-let app = ReactDOM.render(<App />, document.getElementById("app"));
+// let app = ReactDOM.render(<App />, document.getElementById("app"));
 
-let classes = {};
+var semesters = [
+    {
+        name: "Fall 2019",
+        classes: []
+    },
+    {
+        name: "Spring 2020",
+        classes: []
+    }
+];
 
-console.log(app);
+let test = (
+    <div>
+        <DndProvider backend={HTML5Backend}>
+            <Semester name="Fall 2020">
+                <Class name="Class 1"></Class>
+                <Class name="Class 2"></Class>
+            </Semester>
+            <Semester name="Spring 2020">
+                <Class name="Class 3"></Class>
+                <Class name="Class 4"></Class>
+            </Semester>
+        </DndProvider>
+    </div>
+);
 
-app.canvas.fullscreen();
-let origwidth = app.canvas.canvas.width;
-let origheight = app.canvas.canvas.height;
+ReactDOM.render(test, document.getElementById("app"));
 
-
-app.update = function () {
-    app.canvas.fullscreen();
-    app.canvas.color("#111111");
-    app.canvas.drawRect({
-					strokeStyle: "#0000ff",
-                    strokeWidth: 3,
-                    fillStyle: "#0000ff",
-					x: 100, y: 100,
-					width: (origwidth / 10), height: (origheight / 10)
-                });
-    app.canvas.drawText({
-                    fillStyle: "#ffffff",
-					x: 100, y: 100,
-                });
-    setTimeout(app.update, 20);
-}
-
-var timeout = setTimeout(app.update, 20);
