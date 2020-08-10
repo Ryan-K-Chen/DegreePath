@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from csv import writer
 import re
+import time
 
 from selenium import webdriver      #this version of chromedriver.exe supports Chrome v83
 from selenium.webdriver.common.keys import Keys
@@ -13,9 +14,12 @@ from selenium.webdriver.support.select import Select
 ## upper_limit: maximum course number returned
 def getSubjectHtml(currentTerm, index, lower_limit, upper_limit):
     ## must install selenium and put chrome webdriver in same folder as this file
-    # global browser      # keeps browser open after program executes
-    browser = webdriver.Chrome()
+    global browser      # keeps browser open after program executes
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument("--incognito")
+    browser = webdriver.Chrome(chrome_options=chrome_options)
     browser.get('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_dyn_ctlg')
+    time.sleep(2)
 
 
 
@@ -46,20 +50,34 @@ def build_SubjectCourseDict():
     for course in soup.find_all(class_='nttitle'):
         url = main_site + course.find('a', href=True)['href']
         # courses.append(main_site + url['href'])
+        print('')
+        print('1')
+        print(url)
         response = requests.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
-        # if soup.find("All Sections for this Course")=="None":
-        #     continue
-        infoMatrix = getInfo(soup)
-        prereqFilteredMatrix = deleteSatisfiedPrereqs(getPrereqs(soup))
 
-        course_key = infoMatrix[0]+infoMatrix[1]
-        course_dict[course_key] = {}
-        course_dict[course_key]['Department'] = infoMatrix[0]
-        course_dict[course_key]['Course Number'] = infoMatrix[1]
-        course_dict[course_key]['Course Title'] = infoMatrix[2]
-        course_dict[course_key]['Prerequisites'] = prereqFilteredMatrix
-        print(course_key)
+        try:
+            response = requests.get(url, timeout=1)
+            ## IMPORTANT: If "ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host')" occurs, then requests module is trying to open another connection (webpage) when there is already an active connection. Slow down requests to function properly
+            time.sleep(.5)
+            print('2')
+
+            soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
+            # if soup.find("All Sections for this Course")=="None":
+            #     continue
+            infoMatrix = getInfo(soup)
+            prereqFilteredMatrix = deleteSatisfiedPrereqs(getPrereqs(soup))
+
+            course_key = infoMatrix[0] + infoMatrix[1]
+            course_dict[course_key] = {}
+            course_dict[course_key]['Department'] = infoMatrix[0]
+            course_dict[course_key]['Course Number'] = infoMatrix[1]
+            course_dict[course_key]['Course Title'] = infoMatrix[2]
+            course_dict[course_key]['Prerequisites'] = prereqFilteredMatrix
+            print(course_key)
+        except ConnectionResetError:  # This is the correct syntax
+            print("Connection Reset Error for",url)
+
+
 
     return course_dict
 

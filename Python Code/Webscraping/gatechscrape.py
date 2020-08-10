@@ -2,11 +2,12 @@ import requests
 from bs4 import BeautifulSoup
 from csv import writer
 import re
+import time
 
 from selenium import webdriver      #this version of chromedriver.exe supports Chrome v83
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
-
+from selenium.webdriver.chrome.options import Options
 
 ## index: index of the subject in the list
 ## lower_limit: minimum course number returned
@@ -14,9 +15,10 @@ from selenium.webdriver.support.select import Select
 def getSubjectHtml(currentTerm, index, lower_limit, upper_limit):
     ## must install selenium and put chrome webdriver in same folder as this file
     # global browser      # keeps browser open after program executes
-    browser = webdriver.Chrome()
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument("--incognito")
+    browser = webdriver.Chrome(chrome_options=chrome_options)
     browser.get('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_dyn_ctlg')
-
 
 
     ### MUST CHANGE TERM VALUE TO UPDATE FOR NEW SEMESTER ####
@@ -54,6 +56,9 @@ def get_subjectCourseMatrix():
         infoMatrix.append(prereqFilteredMatrix)
         print(infoMatrix)
         courseMatrix.append(infoMatrix)
+
+        ## IMPORTANT: If "ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host')" occurs, then requests module is trying to open another connection (webpage) when there is already an active connection. Slow down requests to function properly
+        time.sleep(.5)
 
     return courseMatrix
 
