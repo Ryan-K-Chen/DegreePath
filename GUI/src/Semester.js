@@ -9,7 +9,7 @@ import 'antd/dist/antd.css';
 const spec = {
     drop(props, monitor, component) {
         const item = monitor.getItem();
-        component.onDrop(item);
+        props.onDrop([component.props.name, item.name]);
         return item;
     }
 }
@@ -40,12 +40,5 @@ export const Semester = DropTarget(MovableTypes.CLASS, spec, collect) ( class ex
                 </Row>
             </div>
         ))
-    }
-    onDrop(item){
-        console.log("you dropped this king: " + item.props.name);
-        const newclasses = _.concat(_.filter(this.state.classes, (o)=>{return o!=item.props.name}), item.props.name);
-        this.setState({
-            classes: newclasses
-        });
     }
 });

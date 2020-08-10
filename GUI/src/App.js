@@ -23,17 +23,29 @@ export default class App extends React.Component {
         return (
             <div>
                 <DndProvider backend={HTML5Backend}>
-                    <Class name="ECE 2020"></Class>
-                    <Class name="BEP 2010"></Class>
                     {Object.keys(this.state.semesters).map(s => (
-                        <Semester key={s} name={s}>
+                        <Semester key={s} name={s} onDrop={(e)=>{this.handleDrop(e)}}>
                             {this.state.semesters[s].map(c => (
-                                <Class key={c} name={c}></Class>
+                                <Class key={c} name={c} onDrag={(e)=>{this.handleDrag(e)}}></Class>
                             ))}
                         </Semester>
                     ))}
                 </DndProvider>
             </div>
         );
+    }
+    handleDrag(e){
+        console.log(e);
+    }
+    handleDrop(e){
+        console.log(e);
+        const new_semesters = this.state.semesters;
+        _.forEach(this.state.semesters, (value, key) => {
+            new_semesters[key] = _.filter(value, (o)=>{return o!=e[1]});
+        });
+        new_semesters[e[0]] = _.concat(new_semesters[e[0]], e[1]);
+        this.setState({
+            semesters: new_semesters
+        });
     }
 }

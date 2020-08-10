@@ -6,10 +6,8 @@ import 'antd/dist/antd.css';
 
 const spec = {
     beginDrag(props, monitor, component) {
-        const item = {props};
-        console.log(monitor.getDropResult());
-        console.log(component);
-        return item;
+        props.onDrag(props.name);
+        return component.props;
     }
 }
 
@@ -22,6 +20,8 @@ const collect = (connect, monitor) => {
 export const Class = DragSource(MovableTypes.CLASS, spec, collect) (class extends React.Component {
     constructor(props){
         super(props);
+        console.log("Here:")
+        console.log(props);
     }
     render(){
         const {connectDragSource} = this.props;
