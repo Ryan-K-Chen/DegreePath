@@ -47,40 +47,28 @@ def build_SubjectCourseDict():
     # create a matrix of all course urls in soup
     for course in soup.find_all(class_='nttitle'):
         url = main_site + course.find('a', href=True)['href']
-        print(url)
+        # print(url)
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
         # if soup.find("All Sections for this Course")=="None":
         #     continue
 
         title = soup.find(class_='nttitle').text     #get the title from the page
-        titleMatrix = getTitle(title)
+        course_key = dict_buildCourseAndTitle(title)
 
         body = soup.find(class_='ntdefault').text   #get the "Detailed Class Information" from the page
-        descAndHours = getDescAndHours(body)
+        dict_buildDescAndHours(body,course_key)
+
+        dict_buildPrerequisites(body,course_key)
 
 
-
-        course_key = titleMatrix[0]+titleMatrix[1]
-        course_dict[course_key] = {}
-        course_dict[course_key]['Department'] = titleMatrix[0]
-        course_dict[course_key]['Course Number'] = titleMatrix[1]
-        course_dict[course_key]['Course Title'] = titleMatrix[2]
-        course_dict[course_key]['Prerequisites'] = getPrereqs(body)
-        # course_dict[course_key]['Description'] =
-        # course_dict[course_key]['Credit Hours'] =
-        # course_dict[course_key]['Lecture Hours']
-        # course_dict[course_key]['Lab Hours']
-
-        print(course_key)
-        print(course_dict[course_key]['Prerequisites'])
 
     return course_dict
 
 
-def getTitle(title):
+def dict_buildCourseAndTitle(title):
     ######## make an edge case for classes not offered anymore ECE 2030 based on All Section for this COurse###
-
+    global course_dict
     """  create a matrix of format, [Department, Course Number, Title]  """
     # print(info)
     tempMatrix = title.split(' - ')
@@ -88,16 +76,27 @@ def getTitle(title):
     infoList = ['null', 'null', 'null']         # initialize matrix
     # reorganize string into desired matrix format ['Department', 'Course Number', 'Course Title']
     tempStr = tempMatrix[0]
-    infoList[0] = tempStr[:tempStr.find(' ')]
-    infoList[1] = tempStr[tempStr.find(' ')+1:len(tempStr)]
-    infoList[2] = tempMatrix[1]
-    return infoList
+    department = tempStr[:tempStr.find(' ')]
+    courseNumber = tempStr[tempStr.find(' ')+1:len(tempStr)]
+    courseTitle = tempMatrix[1]
 
-def getDescAndHours(body):
+    course_key = department + courseNumber
+
+    course_dict[course_key] = {}
+    course_dict[course_key]['Department'] = department
+    course_dict[course_key]['Course Number'] = courseNumber
+    course_dict[course_key]['Course Title'] = courseTitle
+
+    return course_key
+
+def dict_buildDescAndHours(body,course_key):
+    global course_dict
     pass
 
-def getPrereqs(body):
+def dict_buildPrerequisites(body,course_key):
     #get the "Prerequisites" from the page
+    global course_dict
+
     ########## make edge case if there are no prereqs like CRN 80087#################################################
     try:
         rawPrereqs = body.lower().rsplit('prerequisites:')[1]
@@ -108,17 +107,18 @@ def getPrereqs(body):
         rawPrereqs = rawPrereqs.replace(' and ', ' && ')
         rawPrereqs = rawPrereqs.replace(' or ', ' || ')
         rawPrereqs = rawPrereqs.strip()
-        return rawPrereqs
+        course_dict[course_key]['Prerequisites'] = rawPrereqs
+
     except IndexError:
         prereqList = []   ## what is inputted when no prerequisite courses are required
-        return prereqList
+
 
 
 
 
 
 # url='https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=202008&crn_in=90087'
-# course1Info = getTitle(url)
+# course1Info = getInfo(url)
 # print(course1Info)
 
 # course1Prereqs = getPrereqs(url)
