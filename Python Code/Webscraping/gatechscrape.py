@@ -56,6 +56,9 @@ def build_SubjectCourseDict():
         ## IMPORTANT: If "ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host')" occurs, then requests module is trying to open another connection (webpage) when there is already an active connection. Slow down requests to function properly
         time.sleep(.5)
 
+        ## IMPORTANT: If "ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host')" occurs, then requests module is trying to open another connection (webpage) when there is already an active connection. Slow down requests to function properly
+        time.sleep(.5)
+
     return courseMatrix
 
         body = soup.find(class_='ntdefault').text   #get the "Detailed Class Information" from the page
