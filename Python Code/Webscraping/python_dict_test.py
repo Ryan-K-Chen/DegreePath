@@ -4,6 +4,8 @@ from csv import writer
 import re
 import time
 
+## run cmd from the python folder, then pip install beautifulsoup4 and selenium
+
 from selenium import webdriver      #this version of chromedriver.exe supports Chrome v83
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
@@ -73,6 +75,7 @@ def build_SubjectCourseDict():
             course_dict[course_key]['Course Number'] = infoMatrix[1]
             course_dict[course_key]['Course Title'] = infoMatrix[2]
             course_dict[course_key]['Prerequisites'] = prereqFilteredMatrix
+            course_dict[course_key]['url'] = url
             print(course_key)
         except ConnectionResetError:  # This is the correct syntax
             print("Connection Reset Error for",url)
@@ -146,3 +149,7 @@ for key, value in courses.items():
 
 response = requests.get("https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_course_detail?cat_term_in=202008&subj_code_in=ECE&crse_numb_in=3084")
 soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
+
+File_object = open(r"exported_things","Access_Mode")
+for key, value in courses.items():
+    File_object.write(key, ' : ', value)
