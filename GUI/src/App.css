@@ -1,0 +1,21 @@
+.site-background {
+    background: #003057;
+}
+
+.class-content {
+    background: #fff;
+}
+
+.class-sider {
+    background: #003057;
+    font-size: 20px;
+    font-family: "monospace";
+    font-weight: "bold"
+}
+
+.class-sidercontent {
+    background: #fff;
+    font-size: 20px;
+    font-family: "monospace";
+    font-weight: "bold"
+}

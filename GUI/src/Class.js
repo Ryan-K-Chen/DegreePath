@@ -28,7 +28,7 @@ export const Class = DragSource(MovableTypes.CLASS, spec, collect) (class extend
         return (connectDragSource(
             <div>
                 <Col>
-                <Card style={{width: 200, backgroundColor: '#aaaaff'}} bordered={false} hoverable >
+                <Card style={{width: 200, backgroundColor: '#B4A76C'}} bordered={false} hoverable onMouseEnter={()=>{this.handleMouseEnter()}} onMouseLeave={()=>{this.handleMouseExit()}}>
                     <h2>
                     <b>
                         <center>
@@ -40,5 +40,11 @@ export const Class = DragSource(MovableTypes.CLASS, spec, collect) (class extend
                 </Col>
             </div>
         ));
+    }
+    handleMouseEnter(){
+        console.log("entered on " + this.props.name)
+    }
+    handleMouseExit(){
+        console.log("exited on " + this.props.name)
     }
 });

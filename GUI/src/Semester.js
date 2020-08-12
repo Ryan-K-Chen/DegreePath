@@ -31,7 +31,7 @@ export const Semester = DropTarget(MovableTypes.CLASS, spec, collect) ( class ex
         const {connectDropTarget} = this.props;
         return (connectDropTarget(
             <div>
-                <Divider>{this.props.name}</Divider>
+                <Divider style={{fontSize: "20px", fontFamily: "monospace"}}>{this.props.name}</Divider>
                 <Row gutter={16}>
                     {/* {this.state.classes.map(c => (
                         <Class key={c} name={c}></Class>
