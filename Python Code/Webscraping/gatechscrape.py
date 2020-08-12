@@ -3,22 +3,27 @@ from bs4 import BeautifulSoup
 from csv import writer
 import re
 import time
+import json
+
+## run cmd from the python folder, then pip install beautifulsoup4 and selenium
 
 from selenium import webdriver      #this version of chromedriver.exe supports Chrome v83
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
-from selenium.webdriver.chrome.options import Options
+
 
 ## index: index of the subject in the list
 ## lower_limit: minimum course number returned
 ## upper_limit: maximum course number returned
 def getSubjectHtml(currentTerm, index, lower_limit, upper_limit):
     ## must install selenium and put chrome webdriver in same folder as this file
-    # global browser      # keeps browser open after program executes
+    global browser      # keeps browser open after program executes
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--incognito")
     browser = webdriver.Chrome(chrome_options=chrome_options)
     browser.get('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_dyn_ctlg')
+    time.sleep(2)
+
 
 
     ### MUST CHANGE TERM VALUE TO UPDATE FOR NEW SEMESTER ####
@@ -47,62 +52,62 @@ def build_SubjectCourseDict():
     # create a matrix of all course urls in soup
     for course in soup.find_all(class_='nttitle'):
         url = main_site + course.find('a', href=True)['href']
+        # courses.append(main_site + url['href'])
+        print('')
+        print('1')
         print(url)
         response = requests.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
-        # if soup.find("All Sections for this Course")=="None":
-        #     continue
 
-        ## IMPORTANT: If "ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host')" occurs, then requests module is trying to open another connection (webpage) when there is already an active connection. Slow down requests to function properly
-        time.sleep(.5)
+        try:
+            response = requests.get(url, timeout=1)
+            ## IMPORTANT: If "ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host')" occurs, then requests module is trying to open another connection (webpage) when there is already an active connection. Slow down requests to function properly
+            time.sleep(.5)
+            print('2')
 
-        ## IMPORTANT: If "ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host')" occurs, then requests module is trying to open another connection (webpage) when there is already an active connection. Slow down requests to function properly
-        time.sleep(.5)
+            soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
+            # if soup.find("All Sections for this Course")=="None":
+            #     continue
+            infoMatrix = getInfo(soup)
+            prereqFilteredMatrix = deleteSatisfiedPrereqs(getPrereqs(soup))
 
-    return courseMatrix
+            course_key = infoMatrix[0] + infoMatrix[1]
+            course_dict[course_key] = {}
+            course_dict[course_key]['Department'] = infoMatrix[0]
+            course_dict[course_key]['Course Number'] = infoMatrix[1]
+            course_dict[course_key]['Course Title'] = infoMatrix[2]
+            course_dict[course_key]['Prerequisites'] = prereqFilteredMatrix
+            course_dict[course_key]['url'] = url
+            print(course_key)
+        except ConnectionResetError:  # This is the correct syntax
+            print("Connection Reset Error for",url)
 
-        body = soup.find(class_='ntdefault').text   #get the "Detailed Class Information" from the page
-        descAndHours = getDescAndHours(body)
 
-
-
-        course_key = titleMatrix[0]+titleMatrix[1]
-        course_dict[course_key] = {}
-        course_dict[course_key]['Department'] = titleMatrix[0]
-        course_dict[course_key]['Course Number'] = titleMatrix[1]
-        course_dict[course_key]['Course Title'] = titleMatrix[2]
-        course_dict[course_key]['Prerequisites'] = getPrereqs(body)
-        # course_dict[course_key]['Description'] =
-        # course_dict[course_key]['Credit Hours'] =
-        # course_dict[course_key]['Lecture Hours']
-        # course_dict[course_key]['Lab Hours']
-
-        print(course_key)
-        print(course_dict[course_key]['Prerequisites'])
 
     return course_dict
 
 
-def getTitle(title):
+def getInfo(soup):
+
+    info = soup.find(class_='nttitle').text     #get the "Detailed Class Information" from the page
+
     ######## make an edge case for classes not offered anymore ECE 2030 based on All Section for this COurse###
 
     """  create a matrix of format, [Department, Course Number, Title]  """
     # print(info)
-    tempMatrix = title.split(' - ')
+    tempMatrix = info.split(' - ')
 
     infoList = ['null', 'null', 'null']         # initialize matrix
     # reorganize string into desired matrix format ['Department', 'Course Number', 'Course Title']
     tempStr = tempMatrix[0]
+    infoList[2] = tempMatrix[1]
     infoList[0] = tempStr[:tempStr.find(' ')]
     infoList[1] = tempStr[tempStr.find(' ')+1:len(tempStr)]
-    infoList[2] = tempMatrix[1]
     return infoList
 
-def getDescAndHours(body):
-    pass
-
-def getPrereqs(body):
+def getPrereqs(soup):
     #get the "Prerequisites" from the page
+    body = soup.find(class_='ntdefault').text
+
     ########## make edge case if there are no prereqs like CRN 80087#################################################
     try:
         rawPrereqs = body.lower().rsplit('prerequisites:')[1]
@@ -110,8 +115,6 @@ def getPrereqs(body):
         rawPrereqs = re.sub('\sminimum\sgrade\sof\s.','',rawPrereqs)
         # rawPrereqs = rawPrereqs.replace(' minimum grade of c', '').replace(' minimum grade of d', '').replace(' minimum grade of t', '')
         rawPrereqs = rawPrereqs.replace('undergraduate semester level  ','')
-        rawPrereqs = rawPrereqs.replace(' and ', ' && ')
-        rawPrereqs = rawPrereqs.replace(' or ', ' || ')
         rawPrereqs = rawPrereqs.strip()
         return rawPrereqs
     except IndexError:
@@ -119,11 +122,20 @@ def getPrereqs(body):
         return prereqList
 
 
+def deleteSatisfiedPrereqs(prereqList):
+    classHistoryList = ['cs 1301', 'math 1551', 'math 1552', 'phys 2212', 'phys 2211', 'ece 2020', 'math 1554', 'ece 2026',
+                    'ece 2040', 'math 2552', 'math 2551']
 
+    for n in range(len(classHistoryList)):
+        for i in reversed(range(len(prereqList))):
+            if classHistoryList[n] in prereqList[i]:
+                    del prereqList[i]
+
+    return prereqList
 
 
 # url='https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=202008&crn_in=90087'
-# course1Info = getTitle(url)
+# course1Info = getInfo(url)
 # print(course1Info)
 
 # course1Prereqs = getPrereqs(url)
@@ -131,15 +143,19 @@ def getPrereqs(body):
 
 
 
-
 courses = build_SubjectCourseDict()
 for key, value in courses.items():
-    print(key, ' : ', value)        ## prints out each entry in the dictionary
+    print(key, ' : ', value)
+
+
+response = requests.get("https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_course_detail?cat_term_in=202008&subj_code_in=ECE&crse_numb_in=3084")
+soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
+
+File_object = open(r"exported_things","Access_Mode")
+for key, value in courses.items():
+    File_object.write(key, ' : ', value)
+
 
 ## Exports the courses dictionary as a json file
 with open('courses.json', 'w') as json_file:
     json.dump(courses, json_file)
-
-
-# response = requests.get("https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_course_detail?cat_term_in=202008&subj_code_in=ECE&crse_numb_in=3084")
-# soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
