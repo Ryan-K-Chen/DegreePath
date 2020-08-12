@@ -32,13 +32,16 @@ export const Semester = DropTarget(MovableTypes.CLASS, spec, collect) ( class ex
         return (connectDropTarget(
             <div>
                 <Divider style={{fontSize: "20px", fontFamily: "monospace"}}>{this.props.name}</Divider>
-                <Row gutter={16}>
-                    {/* {this.state.classes.map(c => (
-                        <Class key={c} name={c}></Class>
-                    ))} */}
+                <Row gutter={[16,16]} justify="center" style={{
+                    minHeight: this.props.minHeight
+                }}>
                     {this.props.children}
                 </Row>
             </div>
         ))
     }
 });
+
+Semester.defaultProps = {
+    minHeight: "120px"
+}

@@ -16,9 +16,9 @@ export default class App extends React.Component {
         super(props);
         this.state = {
             semesters: {
-                "Workspace": ["brep"],
+                "Workspace": [],
                 "Trash": [],
-                "Fall 2019": ["bep"],
+                "Fall 2019": ["ECE 2020"],
                 "Spring 2020": [],
                 "Summer 2020": [],
                 "Fall 2020": []
@@ -32,7 +32,7 @@ export default class App extends React.Component {
                     <Layout className="site-background">
                         <Layout>
                             <Sider 
-                                width={500} 
+                                width={600} 
                                 className="class-sider"
                                 style={{
                                     padding: "2vh 2vh 2vh",
@@ -46,6 +46,8 @@ export default class App extends React.Component {
                                     Add a Class:
                                     <br/>
                                     <TreeSelect
+                                        showSearch
+                                        placeholder={"Add a Class to the Workspace"}
                                         treeData={courses_tree}
                                         onSelect={(e)=>{this.handleSelect(e)}}
                                         style={{
@@ -53,35 +55,30 @@ export default class App extends React.Component {
                                         }}
                                     >
                                     </TreeSelect>
-                                    <Semester onDrop={(e)=>{this.handleDrop(e)}}>
-                                        <div style={{
-                                            minHeight: "100px"
-                                        }}>
-                                            {this.state.semesters["Workspace"].map(c => (
-                                                <Class onDrag={(e)=>{this.handleDrag(e)}}></Class>
-                                            ))}
-                                        </div>                                        
+                                    <Semester name={"Workspace"} justify="space-around" onDrop={(e)=>{this.handleDrop(e)}}>
+                                        {this.state.semesters["Workspace"].map(c => (
+                                            <Class name={c} key={c} onDrag={(e)=>{this.handleDrag(e)}}></Class>
+                                        ))}
+                                    </Semester>
+                                    <Semester name={"Trash"} onDrop={(e)=>{this.handleDrop(e)}}>
+
                                     </Semester>
                                 </div>
                             </Sider>
                             <Layout className="site-background" style={{
                                 padding: "2vh 2vh 2vh", 
-                                marginLeft: 500, 
+                                marginLeft: 600, 
                                 minHeight: "100vh"
                             }}>
                                 <Content className="class-content" style={{
                                     padding: "2vh",
                                     minHeight: "96vh"
                                 }}>
-                                    {Object.keys(this.state.semesters).map(s => (
+                                    {_.filter(Object.keys(this.state.semesters), (o)=>{return !(o=="Workspace" || o=="Trash")}).map(s => (
                                         <Semester key={s} name={s} onDrop={(e)=>{this.handleDrop(e)}}>
-                                            <div style={{
-                                                minHeight: "100px"
-                                            }}>
-                                                {this.state.semesters[s].map(c => (
-                                                    <Class key={c} name={c} onDrag={(e)=>{this.handleDrag(e)}}></Class>
-                                                ))}
-                                            </div>
+                                            {this.state.semesters[s].map(c => (
+                                                <Class key={c} name={c} onDrag={(e)=>{this.handleDrag(e)}}></Class>
+                                            ))}
                                         </Semester>
                                     ))}
                                 </Content>
@@ -101,13 +98,23 @@ export default class App extends React.Component {
         _.forEach(this.state.semesters, (value, key) => {
             new_semesters[key] = _.filter(value, (o)=>{return o!=e[1]});
         });
-        new_semesters[e[0]] = _.concat(new_semesters[e[0]], e[1]);
+        if(e[0] != "trash"){
+            new_semesters[e[0]] = _.concat(new_semesters[e[0]], e[1]);
+        }
         this.setState({
             semesters: new_semesters
         });
     }
     handleSelect(e){
         console.log(e);
+        const new_semesters = this.state.semesters;
+        _.forEach(this.state.semesters, (value, key) => {
+            new_semesters[key] = _.filter(value, (o)=>{return o!=e});
+        });
+        new_semesters["Workspace"] = _.concat(new_semesters["Workspace"], e);
+        this.setState({
+            semesters: new_semesters
+        });
     }
     updateElement(){
         this.setState(this.state);
