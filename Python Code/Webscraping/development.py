@@ -5,15 +5,17 @@ import re
 import json
 
 from selenium import webdriver      #this version of chromedriver.exe supports Chrome v83
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 
 course_dict = {}
 
+
 ## index: index of the subject in the list
 ## lower_limit: minimum course number returned
 ## upper_limit: maximum course number returned
-def getSubjectHtml(currentTerm, index, lower_limit, upper_limit):
+def getCoursesHtml(currentTerm, lower_limit, upper_limit):
     ## must install selenium and put chrome webdriver in same folder as this file
     # global browser      # keeps browser open after program executes
 
@@ -28,7 +30,15 @@ def getSubjectHtml(currentTerm, index, lower_limit, upper_limit):
     browser.find_element_by_xpath("//input[@type='submit']").click()
 
     ## Select the subject and course range
-    Select(browser.find_element_by_id('subj_id')).select_by_index(index)    # selects which subject index
+    subject_index = 0          # start at the first index of the subject list (0)
+    available_indices = True
+    while available_indices:
+        try:
+            Select(browser.find_element_by_id('subj_id')).select_by_index(subject_index)    # selects the subject at the subject_index
+            subject_index = subject_index + 1
+        except NoSuchElementException:
+            available_indices = False       # if there is no index available to select the while loop stops
+
     browser.find_element_by_id('crse_id_from').send_keys(lower_limit)
     browser.find_element_by_id('crse_id_to').send_keys(upper_limit)
     # Select(browser.find_element_by_xpath(/html/body/div[3]/form/table/tbody/tr[2]/td[2]/input[1]))   # enters lower_limit
@@ -38,21 +48,20 @@ def getSubjectHtml(currentTerm, index, lower_limit, upper_limit):
 
 
 
-def build_SubjectCourseDict():
+def build_CourseDict():
     global course_dict
-    subject_html = getSubjectHtml('Fall 2020', 32, 1999, 5000)       # get subject at this index (Electrical Engineering)
+    subject_html = getCoursesHtml('Fall 2020', 0000, 9999)       # get subject at this index (Electrical Engineering)
     soup = BeautifulSoup(subject_html, 'html.parser')
 
     main_site = 'https://oscar.gatech.edu'  # declare the main url that will be added to hrefs
 
+
     # create a matrix of all course urls in soup
     for course in soup.find_all(class_='nttitle'):
         url = main_site + course.find('a', href=True)['href']
-        # print(url)
+
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
-        # if soup.find("All Sections for this Course")=="None":
-        #     continue
 
         title = soup.find(class_='nttitle').text     #get the title from the page
         body = soup.find(class_='ntdefault').text   #get the "Detailed Class Information" from the page
@@ -65,13 +74,9 @@ def build_SubjectCourseDict():
             dict_buildPrerequisites(body,course_key)
             course_dict[course_key]['url'] = url
 
-
-
     return course_dict
 
-
 def dict_buildCourseAndTitle(title):
-
     global course_dict
     """  create a matrix of format, [Department, Course Number, Title]  """
     # print(info)
@@ -90,7 +95,6 @@ def dict_buildCourseAndTitle(title):
     course_dict[course_key]['Department'] = department
     course_dict[course_key]['Course Number'] = courseNumber
     course_dict[course_key]['Course Title'] = courseTitle
-
     return course_key
 
 def dict_buildDescAndHours(body, course_key):
@@ -119,7 +123,6 @@ def dict_buildDescAndHours(body, course_key):
                 hoursMatrix = bodyMatrix[i].split(' ')
                 hoursMatrix = list(filter(None, hoursMatrix))
                 course_dict[course_key]['Hours'][hoursMatrix[1]] = hoursMatrix[0]
-    print(course_dict[course_key])
     course_dict[course_key]['Description'] = bodyMatrix[0]
 
 def dict_buildPrerequisites(body,course_key):
@@ -156,7 +159,7 @@ def dict_buildPrerequisites(body,course_key):
 
 
 
-courses = build_SubjectCourseDict()
+courses = build_CourseDict()
 
 
 indentedDictionary = json.dumps(courses, indent=4)
@@ -169,7 +172,7 @@ txt_file.write(indentedDictionary)
 txt_file.close()
 
 ## Exports the courses dictionary as a json file
-with open('courses.json', 'w') as json_file:
+with open('courses_dictionary.json', 'w') as json_file:
     json.dump(courses, json_file, indent=4)
 
 

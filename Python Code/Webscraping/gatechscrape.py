@@ -2,27 +2,23 @@ import requests
 from bs4 import BeautifulSoup
 from csv import writer
 import re
-import time
 import json
-
-## run cmd from the python folder, then pip install beautifulsoup4 and selenium
 
 from selenium import webdriver      #this version of chromedriver.exe supports Chrome v83
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 
+course_dict = {}
 
 ## index: index of the subject in the list
 ## lower_limit: minimum course number returned
 ## upper_limit: maximum course number returned
 def getSubjectHtml(currentTerm, index, lower_limit, upper_limit):
     ## must install selenium and put chrome webdriver in same folder as this file
-    global browser      # keeps browser open after program executes
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--incognito")
-    browser = webdriver.Chrome(chrome_options=chrome_options)
+    # global browser      # keeps browser open after program executes
+
+    browser = webdriver.Chrome()
     browser.get('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_dyn_ctlg')
-    time.sleep(2)
 
 
 
@@ -43,70 +39,92 @@ def getSubjectHtml(currentTerm, index, lower_limit, upper_limit):
 
 
 def build_SubjectCourseDict():
+    global course_dict
     subject_html = getSubjectHtml('Fall 2020', 32, 1999, 5000)       # get subject at this index (Electrical Engineering)
     soup = BeautifulSoup(subject_html, 'html.parser')
 
     main_site = 'https://oscar.gatech.edu'  # declare the main url that will be added to hrefs
 
-    course_dict = {}
     # create a matrix of all course urls in soup
     for course in soup.find_all(class_='nttitle'):
         url = main_site + course.find('a', href=True)['href']
-        # courses.append(main_site + url['href'])
-        print('')
-        print('1')
-        print(url)
+        # print(url)
         response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
+        # if soup.find("All Sections for this Course")=="None":
+        #     continue
 
-        try:
-            response = requests.get(url, timeout=1)
-            ## IMPORTANT: If "ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host')" occurs, then requests module is trying to open another connection (webpage) when there is already an active connection. Slow down requests to function properly
-            time.sleep(.5)
-            print('2')
+        title = soup.find(class_='nttitle').text     #get the title from the page
+        body = soup.find(class_='ntdefault').text   #get the "Detailed Class Information" from the page
 
-            soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
-            # if soup.find("All Sections for this Course")=="None":
-            #     continue
-            infoMatrix = getInfo(soup)
-            prereqFilteredMatrix = deleteSatisfiedPrereqs(getPrereqs(soup))
-
-            course_key = infoMatrix[0] + infoMatrix[1]
-            course_dict[course_key] = {}
-            course_dict[course_key]['Department'] = infoMatrix[0]
-            course_dict[course_key]['Course Number'] = infoMatrix[1]
-            course_dict[course_key]['Course Title'] = infoMatrix[2]
-            course_dict[course_key]['Prerequisites'] = prereqFilteredMatrix
+        ### Only makes an entry for currently offered courses on the basis that the page includes the "All Sections for this Course" string
+        ### This excludes previous courses that are still displayed on Oscar
+        if "All Sections for this Course" in body:
+            course_key = dict_buildCourseAndTitle(title)
+            dict_buildDescAndHours(body,course_key)
+            dict_buildPrerequisites(body,course_key)
             course_dict[course_key]['url'] = url
-            print(course_key)
-        except ConnectionResetError:  # This is the correct syntax
-            print("Connection Reset Error for",url)
 
 
 
     return course_dict
 
 
-def getInfo(soup):
+def dict_buildCourseAndTitle(title):
 
-    info = soup.find(class_='nttitle').text     #get the "Detailed Class Information" from the page
-
-    ######## make an edge case for classes not offered anymore ECE 2030 based on All Section for this COurse###
-
+    global course_dict
     """  create a matrix of format, [Department, Course Number, Title]  """
     # print(info)
-    tempMatrix = info.split(' - ')
+    tempMatrix = title.split(' - ')
 
     infoList = ['null', 'null', 'null']         # initialize matrix
     # reorganize string into desired matrix format ['Department', 'Course Number', 'Course Title']
     tempStr = tempMatrix[0]
-    infoList[2] = tempMatrix[1]
-    infoList[0] = tempStr[:tempStr.find(' ')]
-    infoList[1] = tempStr[tempStr.find(' ')+1:len(tempStr)]
-    return infoList
+    department = tempStr[:tempStr.find(' ')]
+    courseNumber = tempStr[tempStr.find(' ')+1:len(tempStr)]
+    courseTitle = tempMatrix[1]
 
-def getPrereqs(soup):
+    course_key = department + ' ' + courseNumber
+
+    course_dict[course_key] = {}
+    course_dict[course_key]['Department'] = department
+    course_dict[course_key]['Course Number'] = courseNumber
+    course_dict[course_key]['Course Title'] = courseTitle
+
+    return course_key
+
+def dict_buildDescAndHours(body, course_key):
+    global course_dict
+    course_dict[course_key]['Hours'] = {}       # initialize dictionary for the course's credit hours
+
+    bodyMatrix = body.splitlines()
+
+
+    if bodyMatrix[1] == '':
+        bodyMatrix[1] = 'No Description'        # if description index is blank is given, replace with this string
+
+    bodyMatrix = list(filter(None, bodyMatrix)) # delete empty indices in matrix
+
+    # iterate through all indices except the description index (0), and if the index has 'hours', format the type of credit hour and add it to the course's credit hours dictionary
+    for i in range(1, len(bodyMatrix)):
+        if 'hours' in bodyMatrix[i]:
+            bodyMatrix[i] = re.sub('[ ]{2,}', ' ', bodyMatrix[i])       # replace 2 or more consecutive spaces with a single space
+            bodyMatrix[i] = bodyMatrix[i].replace(' 0.000 OR ', '')
+
+            if 'TO' in bodyMatrix[i]:  # exception for the case of "1.000 TO 12.000 Credit hours"
+                hoursMatrix = bodyMatrix[i].split(' ')
+                hoursMatrix = list(filter(None, hoursMatrix))
+                course_dict[course_key]['Hours'][hoursMatrix[3]] = hoursMatrix[0] + '-' + hoursMatrix[2]
+            else:
+                hoursMatrix = bodyMatrix[i].split(' ')
+                hoursMatrix = list(filter(None, hoursMatrix))
+                course_dict[course_key]['Hours'][hoursMatrix[1]] = hoursMatrix[0]
+    print(course_dict[course_key])
+    course_dict[course_key]['Description'] = bodyMatrix[0]
+
+def dict_buildPrerequisites(body,course_key):
     #get the "Prerequisites" from the page
-    body = soup.find(class_='ntdefault').text
+    global course_dict
 
     ########## make edge case if there are no prereqs like CRN 80087#################################################
     try:
@@ -115,23 +133,17 @@ def getPrereqs(soup):
         rawPrereqs = re.sub('\sminimum\sgrade\sof\s.','',rawPrereqs)
         # rawPrereqs = rawPrereqs.replace(' minimum grade of c', '').replace(' minimum grade of d', '').replace(' minimum grade of t', '')
         rawPrereqs = rawPrereqs.replace('undergraduate semester level  ','')
+        rawPrereqs = rawPrereqs.replace(' and ', ' && ')
+        rawPrereqs = rawPrereqs.replace(' or ', ' || ')
         rawPrereqs = rawPrereqs.strip()
-        return rawPrereqs
+        course_dict[course_key]['Prerequisites'] = rawPrereqs
+
     except IndexError:
         prereqList = []   ## what is inputted when no prerequisite courses are required
-        return prereqList
 
 
-def deleteSatisfiedPrereqs(prereqList):
-    classHistoryList = ['cs 1301', 'math 1551', 'math 1552', 'phys 2212', 'phys 2211', 'ece 2020', 'math 1554', 'ece 2026',
-                    'ece 2040', 'math 2552', 'math 2551']
 
-    for n in range(len(classHistoryList)):
-        for i in reversed(range(len(prereqList))):
-            if classHistoryList[n] in prereqList[i]:
-                    del prereqList[i]
 
-    return prereqList
 
 
 # url='https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=202008&crn_in=90087'
@@ -143,19 +155,24 @@ def deleteSatisfiedPrereqs(prereqList):
 
 
 
+
 courses = build_SubjectCourseDict()
-for key, value in courses.items():
-    print(key, ' : ', value)
 
 
-response = requests.get("https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_course_detail?cat_term_in=202008&subj_code_in=ECE&crse_numb_in=3084")
-soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
+indentedDictionary = json.dumps(courses, indent=4)
+print(indentedDictionary) ## prints out each entry in the dictionary
 
-File_object = open(r"exported_things","Access_Mode")
-for key, value in courses.items():
-    File_object.write(key, ' : ', value)
 
+## Exports the courses disctionary as a .txt file
+txt_file = open("course_dictionary.txt","w")
+txt_file.write(indentedDictionary)
+txt_file.close()
 
 ## Exports the courses dictionary as a json file
 with open('courses.json', 'w') as json_file:
-    json.dump(courses, json_file)
+    json.dump(courses, json_file, indent=4)
+
+
+
+# response = requests.get("https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_course_detail?cat_term_in=202008&subj_code_in=ECE&crse_numb_in=3084")
+# soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
