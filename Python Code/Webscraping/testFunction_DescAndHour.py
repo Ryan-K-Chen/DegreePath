@@ -14,7 +14,7 @@ course_dict = {}
 
 def build_SubjectCourseDict():
 
-    url = 'https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_course_detail?cat_term_in=202008&subj_code_in=ECE&crse_numb_in=3005'
+    url = 'https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_course_detail?cat_term_in=202008&subj_code_in=ECE&crse_numb_in=2901'
     # print(url)
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
@@ -35,23 +35,33 @@ def build_SubjectCourseDict():
 def dict_buildDescAndHours(body, course_key):
     global course_dict
     course_dict[course_key]['Hours'] = {}
-    print(body)
 
-    bodyMatrix = list(filter(None, body.splitlines()))
-
-
-    for i in range(1,6):
-
+    bodyMatrix = body.splitlines()
+    if bodyMatrix[1] == '':
+        bodyMatrix[1] = 'No Description'
+    bodyMatrix = list(filter(None, bodyMatrix))
+    print(bodyMatrix)
+    for i in range(1, len(bodyMatrix)):
+        print('bodyMatrix[' + str(i) + ']:' + bodyMatrix[i])
         if 'hours' in bodyMatrix[i]:
+
+            print('this one')
+
             bodyMatrix[i] = re.sub('[ ]{2,}', ' ', bodyMatrix[i])
             bodyMatrix[i] = bodyMatrix[i].replace(' 0.000 OR ', '')
-            print('bodyMatrix[i]' + bodyMatrix[i])
-            hoursMatrix = bodyMatrix[i].split(' ')
-            hoursMatrix = list(filter(None, hoursMatrix))
-            print(hoursMatrix)
-            course_dict[course_key]['Hours'][hoursMatrix[1]] = hoursMatrix[0]
-    course_dict[course_key]['Description'] = bodyMatrix[0]
 
+            if 'TO' in bodyMatrix[i]:  # exception for "1.000 TO 12.000 Credit hours"
+                hoursMatrix = bodyMatrix[i].split(' ')
+                hoursMatrix = list(filter(None, hoursMatrix))
+                course_dict[course_key]['Hours'][hoursMatrix[3]] = hoursMatrix[0] + '-' + hoursMatrix[2]
+            else:
+                hoursMatrix = bodyMatrix[i].split(' ')
+                hoursMatrix = list(filter(None, hoursMatrix))
+                course_dict[course_key]['Hours'][hoursMatrix[1]] = hoursMatrix[0]
+            print(hoursMatrix)
+        print('')
+    print(course_dict[course_key])
+    course_dict[course_key]['Description'] = bodyMatrix[0]
 
 
 
@@ -105,7 +115,7 @@ def dict_buildPrerequisites(body, course_key):
 
 courses = build_SubjectCourseDict()
 
-print(json.dumps(courses,sort_keys=True, indent=4)) ## prints out each entry in the dictionary
+print(json.dumps(courses, indent=4)) ## prints out each entry in the dictionary
 
 
 ## Exports the courses dictionary as a json file

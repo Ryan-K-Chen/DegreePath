@@ -55,13 +55,15 @@ def build_SubjectCourseDict():
         #     continue
 
         title = soup.find(class_='nttitle').text     #get the title from the page
-        course_key = dict_buildCourseAndTitle(title)
-
         body = soup.find(class_='ntdefault').text   #get the "Detailed Class Information" from the page
-        dict_buildDescAndHours(body,course_key)
 
-        dict_buildPrerequisites(body,course_key)
-        course_dict[course_key]['url'] = url
+        ### Only makes an entry for currently offered courses on the basis that the page includes the "All Sections for this Course" string
+        ### This excludes previous courses that are still displayed on Oscar
+        if "All Sections for this Course" in body:
+            course_key = dict_buildCourseAndTitle(title)
+            dict_buildDescAndHours(body,course_key)
+            dict_buildPrerequisites(body,course_key)
+            course_dict[course_key]['url'] = url
 
 
 
@@ -69,7 +71,7 @@ def build_SubjectCourseDict():
 
 
 def dict_buildCourseAndTitle(title):
-    ######## make an edge case for classes not offered anymore ECE 2030 based on All Section for this COurse###
+
     global course_dict
     """  create a matrix of format, [Department, Course Number, Title]  """
     # print(info)
@@ -82,7 +84,7 @@ def dict_buildCourseAndTitle(title):
     courseNumber = tempStr[tempStr.find(' ')+1:len(tempStr)]
     courseTitle = tempMatrix[1]
 
-    course_key = department + courseNumber
+    course_key = department + ' ' + courseNumber
 
     course_dict[course_key] = {}
     course_dict[course_key]['Department'] = department
@@ -93,28 +95,30 @@ def dict_buildCourseAndTitle(title):
 
 def dict_buildDescAndHours(body, course_key):
     global course_dict
-    course_dict[course_key]['Hours'] = {}
+    course_dict[course_key]['Hours'] = {}       # initialize dictionary for the course's credit hours
 
-    bodyMatrix = list(filter(None, body.splitlines()))
+    bodyMatrix = body.splitlines()
 
 
-    for i in range(1,len(bodyMatrix)):
+    if bodyMatrix[1] == '':
+        bodyMatrix[1] = 'No Description'        # if description index is blank is given, replace with this string
+
+    bodyMatrix = list(filter(None, bodyMatrix)) # delete empty indices in matrix
+
+    # iterate through all indices except the description index (0), and if the index has 'hours', format the type of credit hour and add it to the course's credit hours dictionary
+    for i in range(1, len(bodyMatrix)):
         if 'hours' in bodyMatrix[i]:
-
-            bodyMatrix[i] = re.sub('[ ]{2,}', ' ', bodyMatrix[i])
+            bodyMatrix[i] = re.sub('[ ]{2,}', ' ', bodyMatrix[i])       # replace 2 or more consecutive spaces with a single space
             bodyMatrix[i] = bodyMatrix[i].replace(' 0.000 OR ', '')
 
-            ## exception for "1.000 TO 12.000 Credit hours"
-            if 'TO' in bodyMatrix[i]:
+            if 'TO' in bodyMatrix[i]:  # exception for the case of "1.000 TO 12.000 Credit hours"
                 hoursMatrix = bodyMatrix[i].split(' ')
                 hoursMatrix = list(filter(None, hoursMatrix))
-                course_dict[course_key]['Hours'][hoursMatrix[1]] = hoursMatrix[0]
+                course_dict[course_key]['Hours'][hoursMatrix[3]] = hoursMatrix[0] + '-' + hoursMatrix[2]
             else:
                 hoursMatrix = bodyMatrix[i].split(' ')
                 hoursMatrix = list(filter(None, hoursMatrix))
                 course_dict[course_key]['Hours'][hoursMatrix[1]] = hoursMatrix[0]
-            print(hoursMatrix)
-
     print(course_dict[course_key])
     course_dict[course_key]['Description'] = bodyMatrix[0]
 
@@ -155,7 +159,7 @@ def dict_buildPrerequisites(body,course_key):
 courses = build_SubjectCourseDict()
 
 
-indentedDictionary = json.dumps(courses,sort_keys=True, indent=4)
+indentedDictionary = json.dumps(courses, indent=4)
 print(indentedDictionary) ## prints out each entry in the dictionary
 
 
@@ -166,7 +170,7 @@ txt_file.close()
 
 ## Exports the courses dictionary as a json file
 with open('courses.json', 'w') as json_file:
-    json.dump(courses, json_file)
+    json.dump(courses, json_file, indent=4)
 
 
 

@@ -1,0 +1,851 @@
+{
+    "courses_tree": [
+        {
+            "title": "ECE",
+            "value": "ECE",
+            "children": [
+                {
+                    "title": "ECE 1XXX",
+                    "value": "ECE 1XXX"
+                },
+                {
+                    "title": "ECE 2001",
+                    "value": "ECE 2001"
+                },
+                {
+                    "title": "ECE 2002",
+                    "value": "ECE 2002"
+                },
+                {
+                    "title": "ECE 2003",
+                    "value": "ECE 2003"
+                },
+                {
+                    "title": "ECE 2020",
+                    "value": "ECE 2020"
+                },
+                {
+                    "title": "ECE 2025",
+                    "value": "ECE 2025"
+                },
+                {
+                    "title": "ECE 2026",
+                    "value": "ECE 2026"
+                },
+                {
+                    "title": "ECE 2030",
+                    "value": "ECE 2030"
+                },
+                {
+                    "title": "ECE 2031",
+                    "value": "ECE 2031"
+                },
+                {
+                    "title": "ECE 2035",
+                    "value": "ECE 2035"
+                },
+                {
+                    "title": "ECE 2036",
+                    "value": "ECE 2036"
+                },
+                {
+                    "title": "ECE 2040",
+                    "value": "ECE 2040"
+                },
+                {
+                    "title": "ECE 2045",
+                    "value": "ECE 2045"
+                },
+                {
+                    "title": "ECE 20X2",
+                    "value": "ECE 20X2"
+                },
+                {
+                    "title": "ECE 20X3",
+                    "value": "ECE 20X3"
+                },
+                {
+                    "title": "ECE 2698",
+                    "value": "ECE 2698"
+                },
+                {
+                    "title": "ECE 2699",
+                    "value": "ECE 2699"
+                },
+                {
+                    "title": "ECE 2801",
+                    "value": "ECE 2801"
+                },
+                {
+                    "title": "ECE 2802",
+                    "value": "ECE 2802"
+                },
+                {
+                    "title": "ECE 2803",
+                    "value": "ECE 2803"
+                },
+                {
+                    "title": "ECE 2804",
+                    "value": "ECE 2804"
+                },
+                {
+                    "title": "ECE 2805",
+                    "value": "ECE 2805"
+                },
+                {
+                    "title": "ECE 2811",
+                    "value": "ECE 2811"
+                },
+                {
+                    "title": "ECE 2812",
+                    "value": "ECE 2812"
+                },
+                {
+                    "title": "ECE 2813",
+                    "value": "ECE 2813"
+                },
+                {
+                    "title": "ECE 2814",
+                    "value": "ECE 2814"
+                },
+                {
+                    "title": "ECE 2815",
+                    "value": "ECE 2815"
+                },
+                {
+                    "title": "ECE 2871",
+                    "value": "ECE 2871"
+                },
+                {
+                    "title": "ECE 2881",
+                    "value": "ECE 2881"
+                },
+                {
+                    "title": "ECE 2882",
+                    "value": "ECE 2882"
+                },
+                {
+                    "title": "ECE 2883",
+                    "value": "ECE 2883"
+                },
+                {
+                    "title": "ECE 2884",
+                    "value": "ECE 2884"
+                },
+                {
+                    "title": "ECE 2891",
+                    "value": "ECE 2891"
+                },
+                {
+                    "title": "ECE 2892",
+                    "value": "ECE 2892"
+                },
+                {
+                    "title": "ECE 2893",
+                    "value": "ECE 2893"
+                },
+                {
+                    "title": "ECE 2894",
+                    "value": "ECE 2894"
+                },
+                {
+                    "title": "ECE 2900",
+                    "value": "ECE 2900"
+                },
+                {
+                    "title": "ECE 2901",
+                    "value": "ECE 2901"
+                },
+                {
+                    "title": "ECE 2902",
+                    "value": "ECE 2902"
+                },
+                {
+                    "title": "ECE 2903",
+                    "value": "ECE 2903"
+                },
+                {
+                    "title": "ECE 2XXX",
+                    "value": "ECE 2XXX"
+                },
+                {
+                    "title": "ECE 3005",
+                    "value": "ECE 3005"
+                },
+                {
+                    "title": "ECE 3006",
+                    "value": "ECE 3006"
+                },
+                {
+                    "title": "ECE 3020",
+                    "value": "ECE 3020"
+                },
+                {
+                    "title": "ECE 3025",
+                    "value": "ECE 3025"
+                },
+                {
+                    "title": "ECE 3030",
+                    "value": "ECE 3030"
+                },
+                {
+                    "title": "ECE 3035",
+                    "value": "ECE 3035"
+                },
+                {
+                    "title": "ECE 3040",
+                    "value": "ECE 3040"
+                },
+                {
+                    "title": "ECE 3041",
+                    "value": "ECE 3041"
+                },
+                {
+                    "title": "ECE 3042",
+                    "value": "ECE 3042"
+                },
+                {
+                    "title": "ECE 3043",
+                    "value": "ECE 3043"
+                },
+                {
+                    "title": "ECE 3050",
+                    "value": "ECE 3050"
+                },
+                {
+                    "title": "ECE 3055",
+                    "value": "ECE 3055"
+                },
+                {
+                    "title": "ECE 3057",
+                    "value": "ECE 3057"
+                },
+                {
+                    "title": "ECE 3060",
+                    "value": "ECE 3060"
+                },
+                {
+                    "title": "ECE 3065",
+                    "value": "ECE 3065"
+                },
+                {
+                    "title": "ECE 3070",
+                    "value": "ECE 3070"
+                },
+                {
+                    "title": "ECE 3071",
+                    "value": "ECE 3071"
+                },
+                {
+                    "title": "ECE 3072",
+                    "value": "ECE 3072"
+                },
+                {
+                    "title": "ECE 3075",
+                    "value": "ECE 3075"
+                },
+                {
+                    "title": "ECE 3076",
+                    "value": "ECE 3076"
+                },
+                {
+                    "title": "ECE 3077",
+                    "value": "ECE 3077"
+                },
+                {
+                    "title": "ECE 3080",
+                    "value": "ECE 3080"
+                },
+                {
+                    "title": "ECE 3084",
+                    "value": "ECE 3084"
+                },
+                {
+                    "title": "ECE 3085",
+                    "value": "ECE 3085"
+                },
+                {
+                    "title": "ECE 3090",
+                    "value": "ECE 3090"
+                },
+                {
+                    "title": "ECE 3150",
+                    "value": "ECE 3150"
+                },
+                {
+                    "title": "ECE 3300",
+                    "value": "ECE 3300"
+                },
+                {
+                    "title": "ECE 3400",
+                    "value": "ECE 3400"
+                },
+                {
+                    "title": "ECE 3431",
+                    "value": "ECE 3431"
+                },
+                {
+                    "title": "ECE 3450",
+                    "value": "ECE 3450"
+                },
+                {
+                    "title": "ECE 3550",
+                    "value": "ECE 3550"
+                },
+                {
+                    "title": "ECE 3600",
+                    "value": "ECE 3600"
+                },
+                {
+                    "title": "ECE 3710",
+                    "value": "ECE 3710"
+                },
+                {
+                    "title": "ECE 3741",
+                    "value": "ECE 3741"
+                },
+                {
+                    "title": "ECE 3801",
+                    "value": "ECE 3801"
+                },
+                {
+                    "title": "ECE 3802",
+                    "value": "ECE 3802"
+                },
+                {
+                    "title": "ECE 3803",
+                    "value": "ECE 3803"
+                },
+                {
+                    "title": "ECE 3804",
+                    "value": "ECE 3804"
+                },
+                {
+                    "title": "ECE 3805",
+                    "value": "ECE 3805"
+                },
+                {
+                    "title": "ECE 3811",
+                    "value": "ECE 3811"
+                },
+                {
+                    "title": "ECE 3812",
+                    "value": "ECE 3812"
+                },
+                {
+                    "title": "ECE 3813",
+                    "value": "ECE 3813"
+                },
+                {
+                    "title": "ECE 3814",
+                    "value": "ECE 3814"
+                },
+                {
+                    "title": "ECE 3815",
+                    "value": "ECE 3815"
+                },
+                {
+                    "title": "ECE 3872",
+                    "value": "ECE 3872"
+                },
+                {
+                    "title": "ECE 3881",
+                    "value": "ECE 3881"
+                },
+                {
+                    "title": "ECE 3882",
+                    "value": "ECE 3882"
+                },
+                {
+                    "title": "ECE 3883",
+                    "value": "ECE 3883"
+                },
+                {
+                    "title": "ECE 3884",
+                    "value": "ECE 3884"
+                },
+                {
+                    "title": "ECE 3891",
+                    "value": "ECE 3891"
+                },
+                {
+                    "title": "ECE 3892",
+                    "value": "ECE 3892"
+                },
+                {
+                    "title": "ECE 3893",
+                    "value": "ECE 3893"
+                },
+                {
+                    "title": "ECE 3894",
+                    "value": "ECE 3894"
+                },
+                {
+                    "title": "ECE 3900",
+                    "value": "ECE 3900"
+                },
+                {
+                    "title": "ECE 3901",
+                    "value": "ECE 3901"
+                },
+                {
+                    "title": "ECE 3902",
+                    "value": "ECE 3902"
+                },
+                {
+                    "title": "ECE 3903",
+                    "value": "ECE 3903"
+                },
+                {
+                    "title": "ECE 3951",
+                    "value": "ECE 3951"
+                },
+                {
+                    "title": "ECE 3952",
+                    "value": "ECE 3952"
+                },
+                {
+                    "title": "ECE 3XXX",
+                    "value": "ECE 3XXX"
+                },
+                {
+                    "title": "ECE 4001",
+                    "value": "ECE 4001"
+                },
+                {
+                    "title": "ECE 4007",
+                    "value": "ECE 4007"
+                },
+                {
+                    "title": "ECE 4011",
+                    "value": "ECE 4011"
+                },
+                {
+                    "title": "ECE 4012",
+                    "value": "ECE 4012"
+                },
+                {
+                    "title": "ECE 4043",
+                    "value": "ECE 4043"
+                },
+                {
+                    "title": "ECE 4100",
+                    "value": "ECE 4100"
+                },
+                {
+                    "title": "ECE 4110",
+                    "value": "ECE 4110"
+                },
+                {
+                    "title": "ECE 4112",
+                    "value": "ECE 4112"
+                },
+                {
+                    "title": "ECE 4115",
+                    "value": "ECE 4115"
+                },
+                {
+                    "title": "ECE 4122",
+                    "value": "ECE 4122"
+                },
+                {
+                    "title": "ECE 4130",
+                    "value": "ECE 4130"
+                },
+                {
+                    "title": "ECE 4147",
+                    "value": "ECE 4147"
+                },
+                {
+                    "title": "ECE 4150",
+                    "value": "ECE 4150"
+                },
+                {
+                    "title": "ECE 4170",
+                    "value": "ECE 4170"
+                },
+                {
+                    "title": "ECE 4175",
+                    "value": "ECE 4175"
+                },
+                {
+                    "title": "ECE 4180",
+                    "value": "ECE 4180"
+                },
+                {
+                    "title": "ECE 4181",
+                    "value": "ECE 4181"
+                },
+                {
+                    "title": "ECE 4185",
+                    "value": "ECE 4185"
+                },
+                {
+                    "title": "ECE 4260",
+                    "value": "ECE 4260"
+                },
+                {
+                    "title": "ECE 4270",
+                    "value": "ECE 4270"
+                },
+                {
+                    "title": "ECE 4271",
+                    "value": "ECE 4271"
+                },
+                {
+                    "title": "ECE 4273",
+                    "value": "ECE 4273"
+                },
+                {
+                    "title": "ECE 4320",
+                    "value": "ECE 4320"
+                },
+                {
+                    "title": "ECE 4321",
+                    "value": "ECE 4321"
+                },
+                {
+                    "title": "ECE 4325",
+                    "value": "ECE 4325"
+                },
+                {
+                    "title": "ECE 4330",
+                    "value": "ECE 4330"
+                },
+                {
+                    "title": "ECE 4335",
+                    "value": "ECE 4335"
+                },
+                {
+                    "title": "ECE 4350",
+                    "value": "ECE 4350"
+                },
+                {
+                    "title": "ECE 4360",
+                    "value": "ECE 4360"
+                },
+                {
+                    "title": "ECE 4370",
+                    "value": "ECE 4370"
+                },
+                {
+                    "title": "ECE 4371",
+                    "value": "ECE 4371"
+                },
+                {
+                    "title": "ECE 4390",
+                    "value": "ECE 4390"
+                },
+                {
+                    "title": "ECE 4391",
+                    "value": "ECE 4391"
+                },
+                {
+                    "title": "ECE 4410",
+                    "value": "ECE 4410"
+                },
+                {
+                    "title": "ECE 4415",
+                    "value": "ECE 4415"
+                },
+                {
+                    "title": "ECE 4418",
+                    "value": "ECE 4418"
+                },
+                {
+                    "title": "ECE 4420",
+                    "value": "ECE 4420"
+                },
+                {
+                    "title": "ECE 4430",
+                    "value": "ECE 4430"
+                },
+                {
+                    "title": "ECE 4435",
+                    "value": "ECE 4435"
+                },
+                {
+                    "title": "ECE 4445",
+                    "value": "ECE 4445"
+                },
+                {
+                    "title": "ECE 4446",
+                    "value": "ECE 4446"
+                },
+                {
+                    "title": "ECE 4450",
+                    "value": "ECE 4450"
+                },
+                {
+                    "title": "ECE 4451",
+                    "value": "ECE 4451"
+                },
+                {
+                    "title": "ECE 4452",
+                    "value": "ECE 4452"
+                },
+                {
+                    "title": "ECE 4460",
+                    "value": "ECE 4460"
+                },
+                {
+                    "title": "ECE 4470",
+                    "value": "ECE 4470"
+                },
+                {
+                    "title": "ECE 4500",
+                    "value": "ECE 4500"
+                },
+                {
+                    "title": "ECE 4501",
+                    "value": "ECE 4501"
+                },
+                {
+                    "title": "ECE 4502",
+                    "value": "ECE 4502"
+                },
+                {
+                    "title": "ECE 4550",
+                    "value": "ECE 4550"
+                },
+                {
+                    "title": "ECE 4551",
+                    "value": "ECE 4551"
+                },
+                {
+                    "title": "ECE 4555",
+                    "value": "ECE 4555"
+                },
+                {
+                    "title": "ECE 4560",
+                    "value": "ECE 4560"
+                },
+                {
+                    "title": "ECE 4562",
+                    "value": "ECE 4562"
+                },
+                {
+                    "title": "ECE 4563",
+                    "value": "ECE 4563"
+                },
+                {
+                    "title": "ECE 4570",
+                    "value": "ECE 4570"
+                },
+                {
+                    "title": "ECE 4575",
+                    "value": "ECE 4575"
+                },
+                {
+                    "title": "ECE 4580",
+                    "value": "ECE 4580"
+                },
+                {
+                    "title": "ECE 4601",
+                    "value": "ECE 4601"
+                },
+                {
+                    "title": "ECE 4602",
+                    "value": "ECE 4602"
+                },
+                {
+                    "title": "ECE 4604",
+                    "value": "ECE 4604"
+                },
+                {
+                    "title": "ECE 4605",
+                    "value": "ECE 4605"
+                },
+                {
+                    "title": "ECE 4606",
+                    "value": "ECE 4606"
+                },
+                {
+                    "title": "ECE 4607",
+                    "value": "ECE 4607"
+                },
+                {
+                    "title": "ECE 4612",
+                    "value": "ECE 4612"
+                },
+                {
+                    "title": "ECE 4698",
+                    "value": "ECE 4698"
+                },
+                {
+                    "title": "ECE 4699",
+                    "value": "ECE 4699"
+                },
+                {
+                    "title": "ECE 4751",
+                    "value": "ECE 4751"
+                },
+                {
+                    "title": "ECE 4752",
+                    "value": "ECE 4752"
+                },
+                {
+                    "title": "ECE 4753",
+                    "value": "ECE 4753"
+                },
+                {
+                    "title": "ECE 4754",
+                    "value": "ECE 4754"
+                },
+                {
+                    "title": "ECE 4755",
+                    "value": "ECE 4755"
+                },
+                {
+                    "title": "ECE 4761",
+                    "value": "ECE 4761"
+                },
+                {
+                    "title": "ECE 4781",
+                    "value": "ECE 4781"
+                },
+                {
+                    "title": "ECE 4782",
+                    "value": "ECE 4782"
+                },
+                {
+                    "title": "ECE 4783",
+                    "value": "ECE 4783"
+                },
+                {
+                    "title": "ECE 4784",
+                    "value": "ECE 4784"
+                },
+                {
+                    "title": "ECE 4795",
+                    "value": "ECE 4795"
+                },
+                {
+                    "title": "ECE 4801",
+                    "value": "ECE 4801"
+                },
+                {
+                    "title": "ECE 4802",
+                    "value": "ECE 4802"
+                },
+                {
+                    "title": "ECE 4803",
+                    "value": "ECE 4803"
+                },
+                {
+                    "title": "ECE 4804",
+                    "value": "ECE 4804"
+                },
+                {
+                    "title": "ECE 4805",
+                    "value": "ECE 4805"
+                },
+                {
+                    "title": "ECE 4811",
+                    "value": "ECE 4811"
+                },
+                {
+                    "title": "ECE 4812",
+                    "value": "ECE 4812"
+                },
+                {
+                    "title": "ECE 4813",
+                    "value": "ECE 4813"
+                },
+                {
+                    "title": "ECE 4814",
+                    "value": "ECE 4814"
+                },
+                {
+                    "title": "ECE 4815",
+                    "value": "ECE 4815"
+                },
+                {
+                    "title": "ECE 4823",
+                    "value": "ECE 4823"
+                },
+                {
+                    "title": "ECE 4833",
+                    "value": "ECE 4833"
+                },
+                {
+                    "title": "ECE 4863",
+                    "value": "ECE 4863"
+                },
+                {
+                    "title": "ECE 4871",
+                    "value": "ECE 4871"
+                },
+                {
+                    "title": "ECE 4872",
+                    "value": "ECE 4872"
+                },
+                {
+                    "title": "ECE 4873",
+                    "value": "ECE 4873"
+                },
+                {
+                    "title": "ECE 4881",
+                    "value": "ECE 4881"
+                },
+                {
+                    "title": "ECE 4882",
+                    "value": "ECE 4882"
+                },
+                {
+                    "title": "ECE 4883",
+                    "value": "ECE 4883"
+                },
+                {
+                    "title": "ECE 4884",
+                    "value": "ECE 4884"
+                },
+                {
+                    "title": "ECE 4891",
+                    "value": "ECE 4891"
+                },
+                {
+                    "title": "ECE 4892",
+                    "value": "ECE 4892"
+                },
+                {
+                    "title": "ECE 4893",
+                    "value": "ECE 4893"
+                },
+                {
+                    "title": "ECE 4894",
+                    "value": "ECE 4894"
+                },
+                {
+                    "title": "ECE 4900",
+                    "value": "ECE 4900"
+                },
+                {
+                    "title": "ECE 4901",
+                    "value": "ECE 4901"
+                },
+                {
+                    "title": "ECE 4902",
+                    "value": "ECE 4902"
+                },
+                {
+                    "title": "ECE 4903",
+                    "value": "ECE 4903"
+                },
+                {
+                    "title": "ECE 4951",
+                    "value": "ECE 4951"
+                },
+                {
+                    "title": "ECE 4952",
+                    "value": "ECE 4952"
+                },
+                {
+                    "title": "ECE 4XXX",
+                    "value": "ECE 4XXX"
+                }
+            ],
+            "selectable": false
+        }
+    ]
+}
