@@ -9,12 +9,9 @@ existing_dep = []
 
 akash_dict = {}
 akash_dict['courses_tree'] = []
-# ece2020 = {}
-# ece2020['department'] = 'ece'
-# ece2020['number'] = '2020'
-# akash_dict['courses_tree'].append(ece2020)
 
 
+## create a course tree used for node.js webpage
 for key, value in courses.items():
     dep = courses[key]['Department']
     if dep in existing_dep:
@@ -22,6 +19,7 @@ for key, value in courses.items():
     else:
         akash_dict['courses_tree'].append({'title': dep, 'value': dep, 'children': [], 'selectable': False})
         existing_dep.append(dep)
+
 
     for index, value in enumerate(akash_dict['courses_tree']):
         if dep == akash_dict['courses_tree'][index]['title']:
@@ -33,9 +31,6 @@ for key, value in courses.items():
 
 
 
-indentedDictionary = json.dumps(akash_dict, indent=4)
-print(indentedDictionary) ## prints out each entry in the dictionary
-
-## Exports the courses dictionary as a json file
+# Exports the courses dictionary as a json file
 with open('courses_tree.json', 'w') as json_file:
     json.dump(akash_dict, json_file, indent=4)

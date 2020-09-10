@@ -1,12 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
-from csv import writer
 import re
 import json
 
-from selenium import webdriver      #this version of chromedriver.exe supports Chrome v83
+from selenium import webdriver      # this version of chromedriver.exe supports Chrome v83
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 
 course_dict = {}
@@ -76,13 +74,14 @@ def build_CourseDict():
 
     return course_dict
 
+"""  create a matrix of format, [Department, Course Number, Title], for course  """
 def dict_buildCourseAndTitle(title):
     global course_dict
-    """  create a matrix of format, [Department, Course Number, Title]  """
-    # print(info)
+
     tempMatrix = title.split(' - ')
 
     infoList = ['null', 'null', 'null']         # initialize matrix
+
     # reorganize string into desired matrix format ['Department', 'Course Number', 'Course Title']
     tempStr = tempMatrix[0]
     department = tempStr[:tempStr.find(' ')]
@@ -125,36 +124,25 @@ def dict_buildDescAndHours(body, course_key):
                 course_dict[course_key]['Hours'][hoursMatrix[1]] = hoursMatrix[0]
     course_dict[course_key]['Description'] = bodyMatrix[0]
 
+#get the "Prerequisites" from the page
 def dict_buildPrerequisites(body,course_key):
-    #get the "Prerequisites" from the page
     global course_dict
 
     ########## make edge case if there are no prereqs like CRN 80087#################################################
     try:
         rawPrereqs = body.lower().rsplit('prerequisites:')[1]
+
         ################ filter out excess text to return only course numbers ##########
         rawPrereqs = re.sub('\sminimum\sgrade\sof\s.','',rawPrereqs)
-        # rawPrereqs = rawPrereqs.replace(' minimum grade of c', '').replace(' minimum grade of d', '').replace(' minimum grade of t', '')
         rawPrereqs = rawPrereqs.replace('undergraduate semester level  ','')
         rawPrereqs = rawPrereqs.replace(' and ', ' && ')
         rawPrereqs = rawPrereqs.replace(' or ', ' || ')
         rawPrereqs = rawPrereqs.strip()
         course_dict[course_key]['Prerequisites'] = rawPrereqs
-
     except IndexError:
         prereqList = []   ## what is inputted when no prerequisite courses are required
 
 
-
-
-
-
-# url='https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=202008&crn_in=90087'
-# course1Info = getInfo(url)
-# print(course1Info)
-
-# course1Prereqs = getPrereqs(url)
-# print(course1Prereqs)
 
 
 
@@ -166,16 +154,6 @@ indentedDictionary = json.dumps(courses, indent=4)
 print(indentedDictionary) ## prints out each entry in the dictionary
 
 
-## Exports the courses disctionary as a .txt file
-txt_file = open("course_dictionary.txt","w")
-txt_file.write(indentedDictionary)
-txt_file.close()
-
 ## Exports the courses dictionary as a json file
 with open('courses_dictionary.json', 'w') as json_file:
     json.dump(courses, json_file, indent=4)
-
-
-
-# response = requests.get("https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_course_detail?cat_term_in=202008&subj_code_in=ECE&crse_numb_in=3084")
-# soup = BeautifulSoup(response.text, 'html.parser')  # get the raw html from the link in text form
