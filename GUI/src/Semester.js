@@ -23,22 +23,32 @@ const collect = (connect, monitor) => {
 export const Semester = DropTarget(MovableTypes.CLASS, spec, collect) ( class extends React.Component {
     constructor(props){
         super(props);
-        this.state = {
-            classes: []
-        }
     }
     render(){
         const {connectDropTarget} = this.props;
-        return (connectDropTarget(
-            <div>
-                <Divider style={{fontSize: "20px", fontFamily: "monospace"}}>{this.props.name}</Divider>
-                <Row gutter={[16,16]} justify="center" style={{
-                    minHeight: this.props.minHeight
-                }}>
-                    {this.props.children}
-                </Row>
-            </div>
-        ))
+        if(this.props.credits === ""){
+            return (connectDropTarget(
+                <div>
+                    <Divider style={{fontSize: "20px", fontFamily: "monospace"}}>{this.props.name}</Divider>
+                    <Row gutter={[16,16]} justify="center" style={{
+                        minHeight: this.props.minHeight
+                    }}>
+                        {this.props.children}
+                    </Row>
+                </div>
+            ))
+        } else {
+            return (connectDropTarget(
+                <div>
+                    <Divider style={{fontSize: "20px", fontFamily: "monospace"}}>{this.props.name + " (" + this.props.credits + ")"}</Divider>
+                    <Row gutter={[16,16]} justify="center" style={{
+                        minHeight: this.props.minHeight
+                    }}>
+                        {this.props.children}
+                    </Row>
+                </div>
+            ))
+        }
     }
 });
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { DragSource } from "react-dnd";
-import { Button, Col, Card, Modal } from "antd";
+import { Button, Col, Card, Modal, Popover } from "antd";
 import { MovableTypes } from "./MovableTypes";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import _ from "lodash";
@@ -24,7 +24,6 @@ const collect = (connect, monitor) => {
 export const Class = DragSource(MovableTypes.CLASS, spec, collect) (class extends React.Component {
     constructor(props){
         super(props);
-        console.log(courses_dictionary)
         let hours = {};
         _.forEach(courses_dictionary[this.props.name]["Hours"], (value, key) => {
             hours[key] = parseFloat(value);
@@ -32,54 +31,79 @@ export const Class = DragSource(MovableTypes.CLASS, spec, collect) (class extend
         this.hours = (Object.keys(hours).map(c => (
             c + ": " + hours[c]
         ))).toString().replace(/,/g, "  |  ");
-        console.log(this.hours);
         this.state = {
-            showmodal: false
+            modalState: false,
+            popState: false
         }
     }
     render(){
         const {connectDragSource} = this.props;
+        let cardStyle = {
+            width: 200, 
+            backgroundColor: "#B4A76C"
+        };
+
+        if(this.props.notsatisfied == true) {
+            cardStyle["backgroundColor"] = '#CA4949';
+        }
         return (connectDragSource(
             <div>
-                <Col>
-                    <Card onClick={()=>{this.showModal()}} style={{width: 200, backgroundColor: '#B4A76C'}} bordered={false} hoverable>
+                <Popover content={
+                    <div>
+                        {courses_dictionary[this.props.name]["Course Title"]}
+                    </div>
+                }>
+                    <Col>
+                        <Card onClick={()=>{this.showModal()}} bordered={false} hoverable onMouseEnter={()=>{console.log("entered")}} onMouseLeave={()=>{console.log("left")}} style={cardStyle} >
+                            <h2>
+                                <b>
+                                    <center>
+                                        {this.props.name}
+                                    </center>
+                                </b>
+                            </h2>
+                        </Card>
+                    </Col>
+                    <Modal 
+                        visible={this.state.modalState}
+                        onOk={()=>{this.hideModal()}}
+                        onCancel={()=>{this.hideModal()}}
+                        footer={[
+                            <div style={{
+                                whiteSpace: "pre-wrap"
+                            }}>
+                                {this.hours}
+                            </div>
+                        ]}
+                    >
                         <h2>
                             <b>
-                                <center>
-                                    {this.props.name}
+                                <center> 
+                                    <a href={courses_dictionary[this.props.name]["url"]} target="_blank">
+                                        {this.props.name}: {courses_dictionary[this.props.name]["Course Title"]}
+                                    </a>
                                 </center>
                             </b>
                         </h2>
-                    </Card>
-                </Col>
-                <Modal 
-                    visible={this.state.modalState}
-                    onOk={()=>{this.hideModal()}}
-                    onCancel={()=>{this.hideModal()}}
-                    footer={[
-                        <div style={{
-                            whiteSpace: "pre-wrap"
-                        }}>
-                            {this.hours}
-                        </div>
-                    ]}
-                >
-                    <h2>
-                        <b>
-                            <center>
-                                {this.props.name}: {courses_dictionary[this.props.name]["Course Title"]}
-                            </center>
-                        </b>
-                    </h2>
-                    <p>
-                        {courses_dictionary[this.props.name]["Description"]}
-                    </p>
-                </Modal>
+                        <p>
+                            {courses_dictionary[this.props.name]["Description"]}
+                        </p>
+                    </Modal>
+                </Popover>
             </div>
         ));
     }
+    showPop(){
+        this.setState({
+            popState: true
+        });
+    }
+    hidePop(){
+        this.setState({
+            popState: false
+        });
+    }
     showModal(){
-        console.log("hello")
         this.setState({
             modalState: true
         });
@@ -87,6 +111,6 @@ export const Class = DragSource(MovableTypes.CLASS, spec, collect) (class extend
     hideModal(){
         this.setState({
             modalState: false
-        })
+        });
     }
 });
