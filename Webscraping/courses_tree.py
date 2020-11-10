@@ -26,7 +26,7 @@ for key, value in courses.items():
             indexOfDep = index
 
 
-    akash_dict['courses_tree'][indexOfDep]['children'].append({'title': courses[key]['Department'] + ' ' + courses[key]['Course Number'], 'value': courses[key]['Department'] + ' ' + courses[key]['Course Number']})
+    akash_dict['courses_tree'][indexOfDep]['children'].append({'title': courses[key]['Department'] + ' ' + courses[key]['Course Number'] + ' - ' + courses[key]['Course Title'], 'value': courses[key]['Department'] + ' ' + courses[key]['Course Number']})
 
 
 
