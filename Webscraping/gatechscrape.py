@@ -138,9 +138,27 @@ def dict_buildPrerequisites(body,course_key):
         rawPrereqs = rawPrereqs.replace(' and ', ' && ')
         rawPrereqs = rawPrereqs.replace(' or ', ' || ')
         rawPrereqs = rawPrereqs.strip()
+
+        ## check if number of open parentheses matches close parentheses ##
+        openPar = 0
+        closePar = 0
+        for char in rawPrereqs:
+            if char == '(':
+                openPar = openPar + 1
+            if char == ')':
+                closePar = closePar + 1
+        if openPar != closePar:
+            if openPar > closePar:
+                print (course_key + "Has unmatched parentheses")
+                rawPrereqs = rawPrereqs + ')'
+            if openPar < closePar:
+                print (course_key + "Has unmatched parentheses")
+                rawPrereqs = '(' + rawPrereqs
+
+
         course_dict[course_key]['Prerequisites'] = rawPrereqs
     except IndexError:
-        prereqList = []   ## what is inputted when no prerequisite courses are required
+        course_dict[course_key]['Prerequisites'] = ""   ## what is inputted when no prerequisite courses are required
 
 
 
@@ -151,7 +169,7 @@ courses = build_CourseDict()
 
 
 indentedDictionary = json.dumps(courses, indent=4)
-print(indentedDictionary) ## prints out each entry in the dictionary
+# print(indentedDictionary) ## prints out each entry in the dictionary
 
 
 ## Exports the courses dictionary as a json file
