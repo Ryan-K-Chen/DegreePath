@@ -17,25 +17,26 @@ export default class App extends React.Component {
     constructor(props){
         super(props);
         let _state = JSON.parse(localStorage.getItem("AppState"));
-        if(_state == null){
-            let _sems = ["Fall 2019", "Spring 2020", "Summer 2020", "Fall 2020", "Spring 2021", "Summer 2021", "Fall 2021", "Spring 2022"];
+        // if(_state == null){
+        console.log(_state);
+            let _sems = ["Fall 2019", "Spring 2020", "Summer 2020", "Fall 2020", "Spring 2021", "Summer 2021", "Fall 2021", "Spring 2022", "Summer 2022", "Fall 2022", "Spring 2023"];
             let _semesters = {
                 "Workspace": {
-                    "Courses": [],
+                    "Courses": (_state["semesters"]["Workspace"] == null) ? [] : _state["semesters"]["Workspace"]["Courses"],
                     "Credits": 0
                 },
                 "Trash": {
-                    "Courses": [],
+                    "Courses": (_state["semesters"]["Trash"] == null) ? [] : _state["semesters"]["Trash"]["Courses"],
                     "Credits": 0
                 },
                 "Accredited Courses": {
-                    "Courses": [],
+                    "Courses": (_state["semesters"]["Accredited Courses"] == null) ? [] : _state["semesters"]["Accredited Courses"]["Courses"],
                     "Credits": 0
                 },
             };
             _.forEach(_sems, (o)=>{
                 _semesters[o] = {
-                    "Courses": [],
+                    "Courses": (_state["semesters"][o] == null) ? [] : _state["semesters"][o]["Courses"],
                     "Credits": 0
                 }
             })
@@ -45,9 +46,10 @@ export default class App extends React.Component {
                 semesters: _semesters,
                 satisfied: {}
             }
-        } else {
-            this.state = _state;
-        }
+        console.log(this.state);
+        // } else {
+        //     this.state = _state;
+        // }
     }
     render(){
         return (
