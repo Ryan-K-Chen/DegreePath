@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "webpack --mode development",
     "start": "webpack-dev-server --mode development --open",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "build-site": "webpack --mode production && cp -r dist docs"
   },
   "author": "",
   "license": "ISC",
