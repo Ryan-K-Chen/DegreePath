@@ -43,8 +43,15 @@ export const Class = DragSource(MovableTypes.CLASS, spec, collect) (class extend
             backgroundColor: "#B4A76C"
         };
 
+        let prereqStyle = {
+            color: "#000000",
+            fontWeight: "normal",
+        };
+
         if(this.props.notsatisfied == true) {
             cardStyle["backgroundColor"] = '#CA4949';
+            prereqStyle["color"] = "#CA4949";
+            prereqStyle["fontWeight"] = "bold";
         }
         return (connectDragSource(
             <div>
@@ -54,7 +61,7 @@ export const Class = DragSource(MovableTypes.CLASS, spec, collect) (class extend
                     </div>
                 }>
                     <Col>
-                        <Card onClick={()=>{this.showModal()}} bordered={false} hoverable onMouseEnter={()=>{console.log("entered")}} onMouseLeave={()=>{console.log("left")}} style={cardStyle} >
+                        <Card onClick={()=>{this.showModal()}} onContextMenu={()=>{console.log(this.props.name)}} bordered={false} hoverable style={cardStyle} >
                             <h2>
                                 <b>
                                     <center>
@@ -64,32 +71,36 @@ export const Class = DragSource(MovableTypes.CLASS, spec, collect) (class extend
                             </h2>
                         </Card>
                     </Col>
-                    <Modal 
-                        visible={this.state.modalState}
-                        onOk={()=>{this.hideModal()}}
-                        onCancel={()=>{this.hideModal()}}
-                        footer={[
-                            <div style={{
-                                whiteSpace: "pre-wrap"
-                            }}>
-                                {this.hours}
-                            </div>
-                        ]}
-                    >
-                        <h2>
-                            <b>
-                                <center> 
-                                    <a href={courses_dictionary[this.props.name]["url"]} target="_blank">
-                                        {this.props.name}: {courses_dictionary[this.props.name]["Course Title"]}
-                                    </a>
-                                </center>
-                            </b>
-                        </h2>
-                        <p>
-                            {courses_dictionary[this.props.name]["Description"]}
-                        </p>
-                    </Modal>
                 </Popover>
+                <Modal
+                    visible={this.state.modalState}
+                    onOk={() => { this.hideModal() }}
+                    onCancel={() => { this.hideModal() }}
+                    footer={[
+                        <div style={{
+                            whiteSpace: "pre-wrap"
+                        }}>
+                            {this.hours}
+                        </div>
+                    ]}
+                >
+                    <h2>
+                        <b>
+                            <center>
+                                <a href={courses_dictionary[this.props.name]["url"]} target="_blank">
+                                    {this.props.name}: {courses_dictionary[this.props.name]["Course Title"]}
+                                </a>
+                            </center>
+                        </b>
+                    </h2>
+                    <div>
+                        {courses_dictionary[this.props.name]["Description"]}
+                        <br /><br />
+                        <div style={prereqStyle}>
+                            Prerequisites: {courses_dictionary[this.props.name]["Prerequisites"].toUpperCase()}
+                        </div>
+                    </div>
+                </Modal>
             </div>
         ));
     }

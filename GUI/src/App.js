@@ -1,7 +1,7 @@
 import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Layout, TreeSelect } from "antd";
+import { Layout, TreeSelect, Button } from "antd";
 import { Class } from "./Class";
 import { Semester } from "./Semester";
 import { courses_tree } from "./data/courses_tree.json";
@@ -11,6 +11,7 @@ import './App.css'
 
 const { Header, Content, Footer, Sider } = Layout;
 const { TreeNode } = TreeSelect;
+
 
 export default class App extends React.Component {
     constructor(props){
@@ -41,7 +42,8 @@ export default class App extends React.Component {
             console.log(_semesters);
             this.state = {
                 sems: _sems,
-                semesters: _semesters
+                semesters: _semesters,
+                satisfied: {}
             }
         } else {
             this.state = _state;
@@ -65,13 +67,17 @@ export default class App extends React.Component {
                                     padding: "2vh",
                                     height: "96vh"
                                 }}>
+                                    <Button onClick={()=>{this.checkAllPrereqs()}}>Check All Prereqs</Button>
+                                    <br/>
                                     Add a Class:
                                     <br/>
                                     <TreeSelect
                                         showSearch
+                                        filterTreeNode={(e, v) => {return (v.title.toLowerCase().includes(e.toLowerCase()))}}
                                         placeholder={"Add a Class to the Workspace"}
                                         treeData={courses_tree}
                                         onSelect={(e)=>{this.handleSelect(e)}}
+                                        listHeight={1024}
                                         style={{
                                             width: "100%"
                                         }}
@@ -79,7 +85,7 @@ export default class App extends React.Component {
                                     </TreeSelect>
                                     <Semester name={"Workspace"} credits="" justify="space-around" onDrop={(e)=>{this.handleDrop(e)}}>
                                         {(this.state.semesters["Workspace"]["Courses"]).map(c => (
-                                            <Class name={c} key={c} notsatisfied={true} onDrag={(e)=>{this.handleDrag(e)}}></Class>
+                                            <Class name={c} key={c} notsatisfied={false} onDrag={(e)=>{this.handleDrag(e)}}></Class>
                                         ))}
                                     </Semester>
                                     <Semester name={"Trash"} credits="" onDrop={(e)=>{this.handleDrop(e)}}>
@@ -96,10 +102,15 @@ export default class App extends React.Component {
                                     padding: "2vh",
                                     minHeight: "96vh"
                                 }}>
-                                    {_.filter(Object.keys(this.state.semesters), (o)=>{return !(o=="Workspace" || o=="Trash")}).map(s => (
+                                    <Semester key={"Accredited Courses"} name={"Accredited Courses"} credits={this.state.semesters["Accredited Courses"]["Credits"]} onDrop={(e) => { this.handleDrop(e) }}>
+                                        {(this.state.semesters["Accredited Courses"]["Courses"]).map(c => (
+                                            <Class key={c} name={c} notsatisfied={false} onDrag={(e) => { this.handleDrag(e) }}></Class>
+                                        ))}
+                                    </Semester>
+                                    {_.filter(Object.keys(this.state.semesters), (o)=>{return !(o=="Workspace" || o=="Trash" || o=="Accredited Courses")}).map(s => (
                                         <Semester key={s} name={s} credits={this.state.semesters[s]["Credits"]} onDrop={(e)=>{this.handleDrop(e)}}>
                                             {(this.state.semesters[s]["Courses"]).map(c => (
-                                                <Class key={c} name={c} onDrag={(e)=>{this.handleDrag(e)}}></Class>
+                                                <Class key={c} name={c} notsatisfied={!this.state.satisfied[c]} onDrag={(e)=>{this.handleDrag(e)}}></Class>
                                             ))}
                                         </Semester>
                                     ))}
@@ -133,10 +144,12 @@ export default class App extends React.Component {
         this.setState({
             semesters: new_semesters
         });
+        this.checkAllPrereqs();
         this.updateLocalStorage();
     }
     handleSelect(e){
         const new_semesters = this.state.semesters;
+        console.log(e);
         _.forEach(this.state.semesters, (value, key) => {
             new_semesters[key]["Courses"] = _.filter(value["Courses"], (o)=>{return o!=e});
         });
@@ -152,32 +165,44 @@ export default class App extends React.Component {
     updateElement(){
         this.setState(this.state);
     }
-    // checkPrereqs(){
-    //     let classDict = {};
+    checkAllPrereqs(){ 
+        let classes = [];
+        classes = _.concat(classes, (this.state.semesters["Accredited Courses"]["Courses"]));
+        let _state = this.state;
+        _state.satisfied = {};
+        _.forEach(this.state.sems, (o)=>{
+            _.forEach(this.state.semesters[o]["Courses"], (cl) => {
+                // console.log(o);
+                let txt = courses_dictionary[cl]["Prerequisites"].toUpperCase();
+                let pattern = new RegExp("\\w{2,4}[\\s]\\w{4,4}", "g") //the regular expression that finds class names within text
+                let matches = txt.match(pattern); // returns an array with all class prerequisites
+                let needToTake = []
+                if(matches != null){
+                    matches.forEach((item) => {
+                        txt = txt.replace(item, (classes.includes(item)).toString());
+                    }); //for each class prerequisite in the array, replace it in the string with true if taken, false if not (based on dictionary from DegreeWorks)
+                } else {
+                    txt = "true";
+                }
 
-    //     classDict = {"ece 2020": "false", "ece 2030": "false", "ece 2035": "true",
-    //     "ece 2036": "false", "cs 1372": "false", "cs 2110": "false"}; //should be replaced with the info from DegreeWorks
-    //     var txt = "(ece 2020 || ece 2030) && (ece 2035 || ece 2036 || cs 1372) || cs 2110"; //the prerequisite text from Buzzport
-    //     var pattern = new RegExp("\\w{2,4}[\\s]\\w{4,4}", "g") //the regular expression that finds class names within text
-    //     var matches = txt.match(pattern); // returns an array with all class prerequisites
-    //     var needToTake = []
-    //     matches.forEach(replacement); //for each class prerequisite in the array, replace it in the string with
-    //                                 // true if taken, false if not (based on dictionary from DegreeWorks)
-    //     var reqsSatisfied = eval(txt); //evaluates whether the prereqs have been satisfied
-    //     if (!reqsSatisfied) { //if they haven't returns a list of the prerequisites that have not been satisfied
-    //         matches.forEach(unsatisfied)
-    //     }
-    //     console.log("You have prerequisites that are currently unsatisfied: " + needToTake);
-
-
-    //     function replacement(item) {
-    //         txt = txt.replace(item, classDict[item]);
-    //     }
-
-    //     function unsatisfied(item) {
-    //         if (!eval(classDict[item])) {
-    //             needToTake.push(item);
-    //         }
-    //     }
-    // }
+                console.log(cl);
+                console.log(txt);
+                if (!eval(txt)) { //if they haven't returns a list of the prerequisites that have not been satisfied
+                    matches.forEach((item) => {
+                        if (!classes.includes([item])) {
+                            needToTake.push(item);
+                        }
+                    });
+                    // console.log("You have prerequisites that are currently unsatisfied: " + needToTake);
+                    _state.satisfied[cl] = false;
+                } else {
+                    // console.log("satisfied!");
+                    _state.satisfied[cl] = true;
+                }
+            });
+            classes = _.concat(classes, (this.state.semesters[o]["Courses"]));
+        });
+        console.log(_state);
+        this.setState(_state);
+    }
 }
