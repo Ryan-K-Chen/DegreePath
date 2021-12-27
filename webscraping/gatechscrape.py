@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import json
 
-from selenium import webdriver      # this version of chromedriver.exe supports Chrome v83
+from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.select import Select
 
@@ -48,7 +48,7 @@ def getCoursesHtml(currentTerm, lower_limit, upper_limit):
 
 def build_CourseDict():
     global course_dict
-    subject_html = getCoursesHtml('Fall 2020', 0000, 9999)       # get subject at this index (Electrical Engineering)
+    subject_html = getCoursesHtml('Spring 2021', 0000, 9999)       # get subject at this index (Electrical Engineering)
     soup = BeautifulSoup(subject_html, 'html.parser')
 
     main_site = 'https://oscar.gatech.edu'  # declare the main url that will be added to hrefs
@@ -163,15 +163,12 @@ def dict_buildPrerequisites(body,course_key):
 
 
 
+if __name__== "__main__":
+    courses = build_CourseDict()
+    indentedDictionary = json.dumps(courses, indent=4)
+    # print(indentedDictionary) ## prints out each entry in the dictionary
 
 
-courses = build_CourseDict()
-
-
-indentedDictionary = json.dumps(courses, indent=4)
-# print(indentedDictionary) ## prints out each entry in the dictionary
-
-
-## Exports the courses dictionary as a json file
-with open('courses_dictionary.json', 'w') as json_file:
-    json.dump(courses, json_file, indent=4)
+    ## Exports the courses dictionary as a json file
+    with open('../src/data/courses_dictionary.json', 'w') as json_file:
+        json.dump(courses, json_file, indent=4)

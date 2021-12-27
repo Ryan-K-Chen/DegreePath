@@ -2,7 +2,7 @@ import json
 
 
 courses = {}
-with open('courses_dictionary.json') as json_file:
+with open('../src/data/courses_dictionary.json') as json_file:
     courses = json.load(json_file)
 
 existing_dep = []
@@ -32,5 +32,5 @@ for key, value in courses.items():
 
 
 # Exports the courses dictionary as a json file
-with open('courses_tree.json', 'w') as json_file:
+with open('../src/data/courses_tree.json', 'w') as json_file:
     json.dump(akash_dict, json_file, indent=4)
